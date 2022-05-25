@@ -1,0 +1,27 @@
+{
+  "name": "prepis",
+  "version": "1.0.0",
+  "description": "Cheating tool for exams",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Delemangi",
+  "homepage": "https://github.com/Delemangi/prepis",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Delemangi/prepis.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Delemangi/prepis/issues"
+  },
+  "devDependencies": {
+    "electron": "^19.0.1",
+    "eslint": "^8.16.0",
+    "eslint-config-canonical": "^35.0.1"
+  },
+  "dependencies": {
+    "discord-api-types": "^0.33.0",
+    "discord.js": "^13.7.0"
+  }
+}

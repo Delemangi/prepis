@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"> -->
+    <link href="./styles.css" rel="stylesheet">
+    <title>Prepis</title>
+  </head>
+
+  <body>
+    <div class="main" id="image-viewer">
+      <img id="image" alt="Image" src="">
+      <div class="controls">
+        <button id="mode">Cycle</button>
+        <button id="prev">&lt;</button>
+        <button id="next">&gt;</button>
+        <input id="slider" type="range" min="1" max="100" value="100">
+        <input id="page" type="number">
+        <button id="go">Go</button>
+      </div>
+      <div class="controls">
+        <span>Mode: <span id="current-mode"></span> | Page: <span id="current-page"></span></span>
+      </div>
+    </div>
+    <div class="main" id="chat">
+      <div id="messages"></div>
+      <div class="controls">
+        <input id="type-message" type="text" placeholder="Message">
+        <button id="send-message">Send</button>
+      </div>
+      <div class="controls">
+        <span>Channel: <span id="discord-channel"></span></span>
+      </div>
+    </div>
+    <div id="tab-wrapper">
+      <div id="tabs">
+        <button id="image-viewer-button">Image Viewer</button>
+        <button id="chat-button">Chat</button>
+      </div>
+    </div>
+    <script src="./renderer.js"></script>
+  </body>
+
+</html>
