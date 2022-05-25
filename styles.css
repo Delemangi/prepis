@@ -13,6 +13,11 @@ body {
     justify-content: space-between;
 }
 
+::selection {
+    background: darkgray;
+    color: lightgray;
+}
+
 div#chat {
     display: none;
 }
@@ -69,9 +74,14 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     background: #ccc;
 }
 
+div#image-container {
+    height: 350px;
+    border: 1px solid gray;
+}
+
 img#image {
-    max-width: 620px;
-    max-height: 450px;
+    max-width: 100%;
+    max-height: 350px;
 }
 
 input#page {
@@ -89,7 +99,12 @@ input::-webkit-inner-spin-button {
 
 button {
     border-radius: 2px;
+    border: 1px solid gray;
     background: none;
+}
+
+button:active {
+    border: 1px solid darkgray;
 }
 
 div#tabs {
@@ -141,11 +156,7 @@ div#tab-wrapper {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #ccc;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    background: darkgray;
 }
 
 div#messages + div.controls {
@@ -154,4 +165,14 @@ div#messages + div.controls {
 
 img.message-image {
     display: block;
+    max-width: 100%;
+}
+
+input:not([type="range"]) {
+    outline: none;
+    border: 1px solid gray;
+}
+
+input:not([type="range"]):focus {
+    border: 1px solid darkgray;
 }

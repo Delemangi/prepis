@@ -10,13 +10,15 @@
 
   <body>
     <div class="main" id="image-viewer">
-      <img id="image" alt="Image" src="">
+      <div id="image-container">
+        <img id="image" alt="Image" src="">
+      </div>
       <div class="controls">
         <button id="mode">Cycle</button>
         <button id="prev">&lt;</button>
         <button id="next">&gt;</button>
         <input id="slider" type="range" min="1" max="100" value="100">
-        <input id="page" type="number">
+        <input id="page" type="number" placeholder="#">
         <button id="go">Go</button>
       </div>
       <div class="controls">
