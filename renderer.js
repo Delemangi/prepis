@@ -1,8 +1,10 @@
 // @ts-nocheck
+
 let currentImage = 0;
 let currentMode = 0;
 let currentTab = 0;
 let lastOpacity = 1;
+let showImages = true;
 
 /**
  * Modes:
@@ -23,6 +25,7 @@ const decreaseOpacityShortcuts = ['s', 'ArrowDown'];
 const toggleVisibilityShortcuts = ['q', 'Escape'];
 const switchTabShortcuts = ['m'];
 const sendMessageShortcuts = ['Enter'];
+const toggleImagesShortcuts = ['b'];
 
 const opacityStep = 0.05;
 const defaultMode = window.modes.modes[0];
@@ -44,6 +47,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const imageViewerTabButton = document.querySelector('button#image-viewer-button');
   const chatTabButton = document.querySelector('button#chat-button');
   const discordChannelSpan = document.querySelector('span#discord-channel');
+  const toggleImagesButton = document.querySelector('button#toggle-images');
 
   const inputs = [pageInput, messageInput];
 
@@ -53,6 +57,7 @@ window.addEventListener('DOMContentLoaded', () => {
   currentPageSpan.textContent = currentImage + 1;
   discordChannelSpan.textContent = window.config.config.channel;
 
+  // eslint-disable-next-line complexity
   document.addEventListener('keydown', (event) => {
     const eventNumber = Number.parseInt(event.key, 10);
 
@@ -74,6 +79,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
     if (sendMessageShortcuts.includes(event.key) && currentTab === 1) {
       sendChatMessage();
+    }
+
+    if (toggleImagesShortcuts.includes(event.key) && currentTab === 1) {
+      toggleChatImageVisibility();
     }
 
     // All tabs
@@ -145,6 +154,8 @@ window.addEventListener('DOMContentLoaded', () => {
   chatTabButton.addEventListener('click', setChatTab);
 
   sendButton.addEventListener('click', sendChatMessage);
+
+  toggleImagesButton.addEventListener('click', toggleChatImageVisibility);
 
   // eslint-disable-next-line unicorn/consistent-function-scoping
   function moveLeft () {
@@ -249,5 +260,17 @@ window.addEventListener('DOMContentLoaded', () => {
     currentTab = 0;
     document.querySelector('div#chat').style.display = 'none';
     document.querySelector('div#image-viewer').style.display = 'flex';
+  }
+
+  function toggleChatImageVisibility () {
+    const root = document.querySelector(':root');
+
+    if (showImages) {
+      showImages = false;
+      root.style.setProperty('--message-image-max-width', '10%');
+    } else {
+      showImages = true;
+      root.style.setProperty('--message-image-max-width', '100%');
+    }
   }
 });

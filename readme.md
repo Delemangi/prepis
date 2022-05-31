@@ -46,3 +46,4 @@ This may take a while to complete.
 * Toggle visibility: `q`, `escape`
 * Switch tabs: `m`
 * Send message: `enter`
+* Toggle chat image visibility: `b`

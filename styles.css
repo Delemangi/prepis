@@ -1,3 +1,7 @@
+:root {
+    --message-image-max-width: 100%;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -132,7 +136,7 @@ div#messages {
 
 input#type-message {
     border-radius: 2px;
-    width: 30rem;
+    width: 24rem;
     text-align: left;
     background: none;
 }
@@ -165,7 +169,7 @@ div#messages + div.controls {
 
 img.message-image {
     display: block;
-    max-width: 100%;
+    max-width: var(--message-image-max-width);
 }
 
 input:not([type="range"]) {
