@@ -82,7 +82,7 @@ window.addEventListener('DOMContentLoaded', () => {
       sendChatMessage();
     }
 
-    if (toggleImagesShortcuts.includes(event.key) && currentTab === 1) {
+    if (toggleImagesShortcuts.includes(event.key) && currentTab === 1 && document.activeElement !== messageInput) {
       toggleChatImageVisibility();
     }
 
