@@ -1,8 +1,11 @@
 const path = require('path');
 const electron = require('electron');
+const config = require('./config.json');
+
+let mainWindow;
 
 function createWindow () {
-  const mainWindow = new electron.BrowserWindow({
+  mainWindow = new electron.BrowserWindow({
     alwaysOnTop: true,
     autoHideMenuBar: true,
     closable: false,
@@ -10,7 +13,7 @@ function createWindow () {
     fullscreen: false,
     fullscreenable: false,
     hasShadow: false,
-    height: 450,
+    height: config.height,
     maximizable: false,
     minimizable: false,
     movable: false,
@@ -22,9 +25,9 @@ function createWindow () {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     },
-    width: 620,
-    x: 180,
-    y: 550
+    width: config.width,
+    x: config.x,
+    y: config.y
   });
 
   mainWindow.loadFile('./index.html');
@@ -32,8 +35,22 @@ function createWindow () {
 
 electron.app.whenReady().then(() => {
   createWindow();
+
+  electron.globalShortcut.register('Esc', () => {
+    if (mainWindow.isMinimized()) {
+      mainWindow.restore();
+    } else {
+      mainWindow.minimize();
+    }
+  });
+
+  electron.ipcMain.on('hide', () => {
+    mainWindow.minimize();
+  });
 });
 
 electron.app.on('window-all-closed', () => {
   electron.app.quit();
+
+  electron.globalShortcut.unregister('Esc');
 });

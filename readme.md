@@ -25,17 +25,31 @@ The terminal will remain on and frozen while running, so it's best to hide it on
     ```json
     {
         "token": "your_bot_token",
-        "channel": "discord_channel_id",
+        "channels": [
+            "discord_channel_id",
+            "other_discord_channel_id"
+        ],
         "modes": [
             "theory",
             "practical",
-            "exercises",
-            "etc"
-        ]
+            "exercises"
+        ],
+        "x": 180,
+        "y": 550,
+        "width": 620,
+        "height": 450
     }
     ```
 
+    The `x` and `y` properties are the x and y offsets, respectively. The default values given here fit a one monitor 1080p setup.
+
 2. Create an `assets` folder in the project directory, and create folders with any name for the image sets. Put all images in the corresponding folders. The folder names should be specified in the `modes` property in `config.json`.
+
+## Chat
+
+The chat feature requires a Discord bot. Create one [here](https://discord.com/developers/applications) and put its token in the `token` property in `config.json`.
+
+Invite the bot to a server and choose a text channel in which the bot listens for messages by coping its ID and adding it in the `channels` property in `config.json`.
 
 ## Converting color images to grayscale
 
@@ -45,11 +59,9 @@ The terminal will remain on and frozen while running, so it's best to hide it on
 
 This may take a while to complete depending on the amount of images. It's supposed to make them less visible against a light background.
 
-## Chat
+## Window coordinates
 
-The chat feature requires a Discord bot. Create one [here](https://discord.com/developers/applications) and put its token in the `token` property in `config.json`.
-
-Invite the bot to a server and choose a text channel in which the bot listens for messages by coping its ID and putting it in the `channel` property in `config.json`.
+Unfortunately there is no straightforward way to find the magic numbers, so you'll just have to try a few times until you're happy. The default configuration given above should be good for most cases.
 
 ## Shortcuts
 
@@ -57,7 +69,9 @@ Invite the bot to a server and choose a text channel in which the bot listens fo
 * Move to right image: `d`, `right arrow`
 * Increase opacity: `w`, `up arrow`
 * Decrease opacity: `s`, `down arrow`
-* Toggle visibility: `q`, `escape`
+* Toggle visibility: `escape`
 * Switch tabs: `m`
 * Send message: `enter`
 * Toggle chat image visibility: `b`
+
+The shortcut for toggling visiblity works even when the window is not focused. All other shortcuts require focus.

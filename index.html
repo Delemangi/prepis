@@ -11,15 +11,14 @@
   <body>
     <div class="main" id="image-viewer">
       <div id="image-container">
-        <img id="image" alt="Image" src="">
+        <img id="image" alt="" src="">
       </div>
       <div class="controls">
-        <button id="mode">Cycle</button>
-        <button id="prev">&lt;</button>
-        <button id="next">&gt;</button>
-        <input id="slider" type="range" min="1" max="100" value="100">
-        <input id="page" type="number" placeholder="#">
-        <button id="go">Go</button>
+        <button id="next-mode">Mode</button>
+        <button id="first-image">First</button>
+        <button id="previous-image">&lt;</button>
+        <button id="next-image">&gt;</button>
+        <input id="image-number" type="number" placeholder="#">
       </div>
       <div class="controls">
         <span>Mode: <span id="current-mode"></span> | Page: <span id="current-page"></span></span>
@@ -28,18 +27,22 @@
     <div class="main" id="chat">
       <div id="messages"></div>
       <div class="controls">
-        <button id="toggle-images">Toggle images</button>
+        <button id="toggle-images">Images</button>
         <input id="type-message" type="text" placeholder="Message">
         <button id="send-message">Send</button>
       </div>
       <div class="controls">
-        <span>Channel: <span id="discord-channel"></span></span>
+        <span>Images: <span id="current-images"></span></span>
       </div>
     </div>
-    <div id="tab-wrapper">
+    <div id="footer">
       <div id="tabs">
         <button id="image-viewer-button">Image Viewer</button>
         <button id="chat-button">Chat</button>
+      </div>
+      <div id="options">
+        <button id="toggle-visibility">Visibility</button>
+        <input id="opacity-slider" type="range" min="1" max="100" value="100">
       </div>
     </div>
     <script src="./renderer.js"></script>

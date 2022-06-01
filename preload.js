@@ -4,6 +4,9 @@ const discord = require('discord.js');
 const electron = require('electron');
 const config = require('./config.json');
 
+const messagesSelector = 'div#messages';
+const statusSymbol = '•';
+
 const modes = config.modes;
 const assets = {};
 
@@ -14,6 +17,10 @@ for (const mode of modes) {
 let client;
 
 function createDiscordBot () {
+  if (client) {
+    client.destroy();
+  }
+
   client = new discord.Client({
     intents: [
       discord.Intents.FLAGS.GUILD_MESSAGES,
@@ -26,25 +33,43 @@ function createDiscordBot () {
       return;
     }
 
-    if (message.channel.id !== config.channel) {
+    if (!config.channels.includes(message.channel.id)) {
       return;
     }
 
     receiveMessage(message);
   });
 
-  client.login(config.token);
+  client.on('error', (error) => {
+    showStatusMessage(error.message);
+  });
+
+  client.on('warn', (message) => {
+    showStatusMessage(message);
+  });
+
+  client.login(config.token).then(() => showStatusMessage('Discord bot logged in.'));
+}
+
+function showStatusMessage (message) {
+  const messages = document.querySelector(messagesSelector);
+
+  const element = document.createElement('p');
+  element.classList.add('message', 'status');
+  element.textContent = ` ${statusSymbol} ${message}`;
+
+  messages.append(element);
 }
 
 function sendMessage (message) {
-  const channel = client.channels.cache.get(config.channel);
+  for (const channel of config.channels) {
+    client.channels.cache.get(channel).send(message);
+  }
 
-  channel.send(message);
-
-  const messages = document.querySelector('div#messages');
+  const messages = document.querySelector(messagesSelector);
 
   const element = document.createElement('p');
-  element.classList.toggle('message');
+  element.classList.add('message');
   element.textContent = `[${new Date().toTimeString().split(' ')[0]}] Me: ${message}`;
 
   messages.append(element);
@@ -52,9 +77,9 @@ function sendMessage (message) {
 }
 
 function receiveMessage (message) {
-  const messages = document.querySelector('div#messages');
+  const messages = document.querySelector(messagesSelector);
   const element = document.createElement('p');
-  element.classList.toggle('message');
+  element.classList.add('message');
 
   const images = getImages(message.content);
   let string = message.content;
@@ -87,10 +112,15 @@ function getImages (url) {
   return url.match(/https?.+\.(png|jpg|jpeg|bmp|gif)/gu);
 }
 
-createDiscordBot();
+function hide () {
+  electron.ipcRenderer.send('hide');
+}
 
 electron.contextBridge.exposeInMainWorld('assets', assets);
 electron.contextBridge.exposeInMainWorld('modes', {modes});
 electron.contextBridge.exposeInMainWorld('messages', {sendMessage});
 electron.contextBridge.exposeInMainWorld('discord', {createDiscordBot});
 electron.contextBridge.exposeInMainWorld('config', {config});
+electron.contextBridge.exposeInMainWorld('hide', {hide});
+
+createDiscordBot();

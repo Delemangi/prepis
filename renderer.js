@@ -3,7 +3,6 @@
 let currentImage = 0;
 let currentMode = 0;
 let currentTab = 0;
-let lastOpacity = 1;
 let showImages = true;
 
 /**
@@ -22,7 +21,6 @@ const moveLeftShortcuts = ['a', 'ArrowLeft'];
 const moveRightShortcuts = ['d', 'ArrowRight'];
 const increaseOpacityShortcuts = ['w', 'ArrowUp'];
 const decreaseOpacityShortcuts = ['s', 'ArrowDown'];
-const toggleVisibilityShortcuts = ['q', 'Escape'];
 const switchTabShortcuts = ['m'];
 const sendMessageShortcuts = ['Enter'];
 const toggleImagesShortcuts = ['b'];
@@ -34,28 +32,31 @@ window.addEventListener('DOMContentLoaded', () => {
   let assets = window.assets[defaultMode];
 
   const image = document.querySelector('img#image');
-  const sliderInput = document.querySelector('input#slider');
-  const pageInput = document.querySelector('input#page');
-  const goButton = document.querySelector('button#go');
-  const nextButton = document.querySelector('button#next');
-  const previousButton = document.querySelector('button#prev');
-  const modeButton = document.querySelector('button#mode');
+
   const currentModeSpan = document.querySelector('span#current-mode');
   const currentPageSpan = document.querySelector('span#current-page');
+  const currentImagesSpan = document.querySelector('span#current-images');
+
+  const opacitySliderInput = document.querySelector('input#opacity-slider');
+  const imageNumberInput = document.querySelector('input#image-number');
   const messageInput = document.querySelector('input#type-message');
+
+  const nextImageButton = document.querySelector('button#next-image');
+  const previousImageButton = document.querySelector('button#previous-image');
+  const nextModeButton = document.querySelector('button#next-mode');
   const sendButton = document.querySelector('button#send-message');
   const imageViewerTabButton = document.querySelector('button#image-viewer-button');
   const chatTabButton = document.querySelector('button#chat-button');
-  const discordChannelSpan = document.querySelector('span#discord-channel');
   const toggleImagesButton = document.querySelector('button#toggle-images');
+  const toggleVisibilityButton = document.querySelector('button#toggle-visibility');
+  const firstImageButton = document.querySelector('button#first-image');
 
-  const inputs = [pageInput, messageInput];
+  const inputs = [imageNumberInput, messageInput];
 
   image.src = assets[currentImage];
-
   currentModeSpan.textContent = defaultMode;
   currentPageSpan.textContent = currentImage + 1;
-  discordChannelSpan.textContent = window.config.config.channel;
+  currentImagesSpan.textContent = 'Shown';
 
   // eslint-disable-next-line complexity
   document.addEventListener('keydown', (event) => {
@@ -71,7 +72,7 @@ window.addEventListener('DOMContentLoaded', () => {
       moveRight();
     }
 
-    if (!Number.isNaN(eventNumber) && document.activeElement !== pageInput && eventNumber > 0 && eventNumber <= assets.length && currentTab === 0) {
+    if (!Number.isNaN(eventNumber) && document.activeElement !== imageNumberInput && eventNumber > 0 && eventNumber <= assets.length && currentTab === 0) {
       moveTo(eventNumber);
     }
 
@@ -95,10 +96,6 @@ window.addEventListener('DOMContentLoaded', () => {
       changeOpacity(-opacityStep);
     }
 
-    if (toggleVisibilityShortcuts.includes(event.key) && !inputs.includes(document.activeElement)) {
-      toggleVisibility();
-    }
-
     if (switchTabShortcuts.includes(event.key) && !inputs.includes(document.activeElement)) {
       switchTab();
     }
@@ -108,14 +105,14 @@ window.addEventListener('DOMContentLoaded', () => {
     updateImage();
   });
 
-  sliderInput.addEventListener('input', () => {
-    setOpacity(Number.parseFloat(sliderInput.value) / 100);
+  opacitySliderInput.addEventListener('input', () => {
+    setOpacity(Number.parseFloat(opacitySliderInput.value) / 100);
   });
 
-  goButton.addEventListener('click', () => {
-    const value = pageInput.value;
+  imageNumberInput.addEventListener('input', () => {
+    const value = imageNumberInput.value;
 
-    if (value === '') {
+    if (value === '' || value === '0') {
       return;
     }
 
@@ -123,17 +120,17 @@ window.addEventListener('DOMContentLoaded', () => {
     updateImage();
   });
 
-  nextButton.addEventListener('click', () => {
+  nextImageButton.addEventListener('click', () => {
     moveRight();
     updateImage();
   });
 
-  previousButton.addEventListener('click', () => {
+  previousImageButton.addEventListener('click', () => {
     moveLeft();
     updateImage();
   });
 
-  modeButton.addEventListener('click', () => {
+  nextModeButton.addEventListener('click', () => {
     if (currentMode === 0) {
       currentMode = 1;
       assets = window.assets.practical;
@@ -156,6 +153,15 @@ window.addEventListener('DOMContentLoaded', () => {
   sendButton.addEventListener('click', sendChatMessage);
 
   toggleImagesButton.addEventListener('click', toggleChatImageVisibility);
+
+  firstImageButton.addEventListener('click', () => {
+    moveTo(1);
+    updateImage();
+  });
+
+  toggleVisibilityButton.addEventListener('click', () => {
+    window.hide.hide();
+  });
 
   // eslint-disable-next-line unicorn/consistent-function-scoping
   function moveLeft () {
@@ -203,31 +209,13 @@ window.addEventListener('DOMContentLoaded', () => {
     setOpacity(currentOpacity + step);
   }
 
-  function setOpacity (value, update = true) {
-    const opacity = Math.max(0, Math.min(1, value));
-
-    if (update) {
-      lastOpacity = opacity;
-    }
+  function setOpacity (value) {
+    const opacity = Math.max(0.05, Math.min(1, value));
 
     document.body.style.opacity = opacity;
-    sliderInput.value = opacity * 100;
+    opacitySliderInput.value = opacity * 100;
 
     currentPageSpan.textContent = currentImage + 1;
-  }
-
-  function toggleVisibility () {
-    let currentOpacity = Number.parseFloat(document.body.style.opacity);
-
-    if (Number.isNaN(currentOpacity)) {
-      currentOpacity = 1;
-    }
-
-    if (currentOpacity === 0) {
-      setOpacity(lastOpacity);
-    } else {
-      setOpacity(0, false);
-    }
   }
 
   function sendChatMessage () {
@@ -267,10 +255,12 @@ window.addEventListener('DOMContentLoaded', () => {
 
     if (showImages) {
       showImages = false;
-      root.style.setProperty('--message-image-max-width', '10%');
+      root.style.setProperty('--message-image-max-width', '5%');
+      currentImagesSpan.textContent = 'Hidden';
     } else {
       showImages = true;
       root.style.setProperty('--message-image-max-width', '100%');
+      currentImagesSpan.textContent = 'Shown';
     }
   }
 });

@@ -4,6 +4,7 @@
 
 * {
     box-sizing: border-box;
+    -webkit-user-drag: none;
 }
 
 body {
@@ -28,7 +29,7 @@ div#chat {
 
 div.main {
     display: flex;
-    flex: 2 1 auto;
+    flex: 1 1 auto;
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
@@ -88,7 +89,7 @@ img#image {
     max-height: 350px;
 }
 
-input#page {
+input#image-number {
     border-radius: 2px;
     width: 2rem;
     text-align: center;
@@ -116,7 +117,15 @@ div#tabs {
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
-    gap: 0.25rem;
+    gap: 1rem;
+}
+
+div#options {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
 }
 
 div#messages {
@@ -141,10 +150,13 @@ input#type-message {
     background: none;
 }
 
-div#tab-wrapper {
+div#footer {
     display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 3rem;
 }
 
 .message {
@@ -161,10 +173,6 @@ div#tab-wrapper {
 
 ::-webkit-scrollbar-thumb {
     background: darkgray;
-}
-
-div#messages + div.controls {
-    height: 2.5rem;
 }
 
 img.message-image {
