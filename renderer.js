@@ -3,7 +3,7 @@
 let currentImage = 0;
 let currentMode = 0;
 let currentTab = 0;
-let showImages = true;
+let showImages = false;
 
 /**
  * Modes:
@@ -56,7 +56,7 @@ window.addEventListener('DOMContentLoaded', () => {
   image.src = assets[currentImage];
   currentModeSpan.textContent = defaultMode;
   currentPageSpan.textContent = currentImage + 1;
-  currentImagesSpan.textContent = 'Shown';
+  currentImagesSpan.textContent = 'Small';
 
   // eslint-disable-next-line complexity
   document.addEventListener('keydown', (event) => {
@@ -256,11 +256,11 @@ window.addEventListener('DOMContentLoaded', () => {
     if (showImages) {
       showImages = false;
       root.style.setProperty('--message-image-max-width', '5%');
-      currentImagesSpan.textContent = 'Hidden';
+      currentImagesSpan.textContent = 'Small';
     } else {
       showImages = true;
       root.style.setProperty('--message-image-max-width', '100%');
-      currentImagesSpan.textContent = 'Shown';
+      currentImagesSpan.textContent = 'Normal';
     }
   }
 });
