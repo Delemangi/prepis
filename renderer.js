@@ -252,6 +252,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function toggleChatImageVisibility () {
     const root = document.querySelector(':root');
+    const messages = document.querySelector('div#messages');
 
     if (showImages) {
       showImages = false;
@@ -262,5 +263,7 @@ window.addEventListener('DOMContentLoaded', () => {
       root.style.setProperty('--message-image-max-width', '100%');
       currentImagesSpan.textContent = 'Normal';
     }
+
+    messages.scrollTop = messages.scrollHeight;
   }
 });
