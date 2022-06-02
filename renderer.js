@@ -112,7 +112,7 @@ window.addEventListener('DOMContentLoaded', () => {
   imageNumberInput.addEventListener('input', () => {
     const value = imageNumberInput.value;
 
-    if (value === '' || value === '0') {
+    if (value === '' || value === '0' || value === '-0') {
       return;
     }
 
