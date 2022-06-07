@@ -65,6 +65,9 @@ This may take a while to complete depending on the amount of images. It's suppos
 
 Unfortunately there is no straightforward way to find the magic numbers, so you'll just have to try a few times until you're happy. The default configuration given above should be good for most cases.
 
+For single 1080p monitor setups, the `x` setting should be 180.
+For dual 1080p monitor setups, the `x` settings should be 360.
+
 ## Shortcuts
 
 * Move to left image: `a`, `left arrow`
