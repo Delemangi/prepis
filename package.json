@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "electron": "^19.0.1",
+    "electron-pdf-window": "^1.0.12",
     "eslint": "^8.16.0",
     "eslint-config-canonical": "^35.0.1"
   },

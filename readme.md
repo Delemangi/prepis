@@ -45,6 +45,8 @@ The terminal will remain on and frozen while running, so it's best to hide it on
 
 2. Create an `assets` folder in the project directory, and create folders with any name for the image sets. Put all images in the corresponding folders. The folder names should be specified in the `modes` property in `config.json`.
 
+3. For the PDF viewer, put a PDF file called `test.pdf` in the `assets` directory.
+
 ## Chat
 
 The chat feature requires a Discord bot. Create one [here](https://discord.com/developers/applications) and put its token in the `token` property in `config.json`.
@@ -67,11 +69,16 @@ Unfortunately there is no straightforward way to find the magic numbers, so you'
 
 * Move to left image: `a`, `left arrow`
 * Move to right image: `d`, `right arrow`
-* Increase opacity: `w`, `up arrow`
-* Decrease opacity: `s`, `down arrow`
-* Toggle visibility: `escape`
+* Increase opacity (main window only): `w`, `up arrow`
+* Decrease opacity (main window only): `s`, `down arrow`
+* Increase opacity (PDF window only): `alt + w`
+* Decrease opacity (PDF window only): `alt + s`
+* Toggle visibility (main window only): `escape`
+* Toggle visibility (PDF window only): `shift + escape`
 * Switch tabs: `m`
 * Send message: `enter`
 * Toggle chat image visibility: `b`
 
-The shortcut for toggling visiblity works even when the window is not focused. All other shortcuts require focus.
+The shortcuts for toggling visiblity work even when the windows are not focused. All other shortcuts require focus.
+
+When starting the app, by default the main window is revealed and the PDF window is hidden.

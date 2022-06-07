@@ -1,56 +1,92 @@
 const path = require('path');
 const electron = require('electron');
+const PDFWindow = require('electron-pdf-window');
 const config = require('./config.json');
 
-let mainWindow;
+const options = {
+  alwaysOnTop: true,
+  autoHideMenuBar: true,
+  closable: false,
+  frame: false,
+  fullscreen: false,
+  fullscreenable: false,
+  hasShadow: false,
+  height: config.height,
+  maximizable: false,
+  minimizable: false,
+  movable: false,
+  resizable: false,
+  skipTaskbar: true,
+  thickFrame: false,
+  title: '',
+  transparent: true,
+  webPreferences: {
+    preload: path.join(__dirname, 'preload.js')
+  },
+  width: config.width,
+  x: config.x,
+  y: config.y
+};
 
-function createWindow () {
-  mainWindow = new electron.BrowserWindow({
-    alwaysOnTop: true,
-    autoHideMenuBar: true,
-    closable: false,
-    frame: false,
-    fullscreen: false,
-    fullscreenable: false,
-    hasShadow: false,
-    height: config.height,
-    maximizable: false,
-    minimizable: false,
-    movable: false,
-    resizable: false,
-    skipTaskbar: true,
-    thickFrame: false,
-    title: '',
-    transparent: true,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
-    },
-    width: config.width,
-    x: config.x,
-    y: config.y
+let main;
+let pdf;
+
+function createMainWindow () {
+  main = new electron.BrowserWindow(options);
+  main.loadFile('./index.html');
+}
+
+function createPDFWindow () {
+  pdf = new PDFWindow({
+    ...options,
+    opacity: 0.25
   });
+  pdf.loadURL(path.join(__dirname, 'assets', 'test.pdf'));
 
-  mainWindow.loadFile('./index.html');
+  pdf.minimize();
 }
 
 electron.app.whenReady().then(() => {
-  createWindow();
+  createMainWindow();
+  createPDFWindow();
 
   electron.globalShortcut.register('Esc', () => {
-    if (mainWindow.isMinimized()) {
-      mainWindow.restore();
+    if (main.isMinimized()) {
+      main.restore();
     } else {
-      mainWindow.minimize();
+      main.minimize();
+    }
+  });
+
+  electron.globalShortcut.register('Shift+Esc', () => {
+    if (pdf.isMinimized()) {
+      pdf.restore();
+    } else {
+      pdf.minimize();
+    }
+  });
+
+  electron.globalShortcut.register('Alt+S', () => {
+    if (!pdf.isMinimized()) {
+      const opacity = pdf.getOpacity();
+      pdf.setOpacity(Math.min(1, Math.max(0.05, opacity - 0.05)));
+    }
+  });
+
+  electron.globalShortcut.register('Alt+W', () => {
+    if (!pdf.isMinimized()) {
+      const opacity = pdf.getOpacity();
+      pdf.setOpacity(Math.min(1, Math.max(0.05, opacity + 0.05)));
     }
   });
 
   electron.ipcMain.on('hide', () => {
-    mainWindow.minimize();
+    main.minimize();
   });
 });
 
 electron.app.on('window-all-closed', () => {
   electron.app.quit();
 
-  electron.globalShortcut.unregister('Esc');
+  electron.globalShortcut.unregisterAll();
 });
