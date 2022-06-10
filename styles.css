@@ -23,6 +23,10 @@ body {
     color: lightgray;
 }
 
+::-webkit-scrollbar {
+    display: none;
+}
+
 div#chat {
     display: none;
 }
@@ -81,16 +85,12 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 
 div#image-container {
     height: 360px;
-    border: 1px solid gray;
     overflow-y: auto;
-}
-
-::-webkit-scrollbar {
-    display: none;
 }
 
 img#image {
     max-width: 100%;
+    border: 1px solid gray;
 }
 
 input#image-number {
@@ -134,7 +134,7 @@ div#options {
 
 div#messages {
     width: 620px;
-    height: 350px;
+    height: 360px;
     max-width: 620px;
     display: flex;
     flex-direction: column;
