@@ -6,10 +6,6 @@ let currentTab = 0;
 let showImages = false;
 
 /**
- * Modes:
- * 0: Theory
- * 1: Practical
- *
  * Tabs:
  * 0 - Image Viewer
  * 1 - Chat
@@ -131,13 +127,8 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   nextModeButton.addEventListener('click', () => {
-    if (currentMode === 0) {
-      currentMode = 1;
-      assets = window.assets.practical;
-    } else {
-      currentMode = 0;
-      assets = window.assets.theory;
-    }
+    currentMode = (currentMode + 1) % window.modes.modes.length;
+    assets = window.assets[window.modes.modes[currentMode]];
 
     currentImage = 0;
     updateImage();
