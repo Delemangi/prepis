@@ -85,3 +85,7 @@ For dual 1080p monitor setups, the `x` settings should be 360.
 The shortcuts for toggling visiblity work even when the windows are not focused. All other shortcuts require focus.
 
 When starting the app, by default the main window is revealed and the PDF window is hidden.
+
+## Troubleshooting
+
+In case something goes wrong, the `%APPDATA%/prepis` folder should be deleted.
