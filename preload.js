@@ -29,7 +29,7 @@ function createDiscordBot () {
   });
 
   client.on('messageCreate', (message) => {
-    if (message.author.bot) {
+    if (message.author.bot && !message.webhookId) {
       return;
     }
 
@@ -61,7 +61,9 @@ function showStatusMessage (message) {
   messages.append(element);
 }
 
-function sendMessage (message) {
+function sendMessage (text) {
+  const message = text.trim();
+
   for (const channel of config.channels) {
     client.channels.cache.get(channel).send(message);
   }
@@ -82,7 +84,7 @@ function receiveMessage (message) {
   element.classList.add('message');
 
   const images = getImages(message.content);
-  let string = message.content;
+  let string = message.content.trim();
 
   element.textContent = `[${message.createdAt.toTimeString().split(' ')[0]}] ${message.author.tag}: ${string}`;
 

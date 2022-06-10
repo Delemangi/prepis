@@ -35,7 +35,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   const opacitySliderInput = document.querySelector('input#opacity-slider');
   const imageNumberInput = document.querySelector('input#image-number');
-  const messageInput = document.querySelector('input#type-message');
+  const messageTextarea = document.querySelector('textarea#type-message');
 
   const nextImageButton = document.querySelector('button#next-image');
   const previousImageButton = document.querySelector('button#previous-image');
@@ -47,7 +47,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const toggleVisibilityButton = document.querySelector('button#toggle-visibility');
   const firstImageButton = document.querySelector('button#first-image');
 
-  const inputs = [imageNumberInput, messageInput];
+  const inputs = [imageNumberInput, messageTextarea];
 
   image.src = assets[currentImage];
   currentModeSpan.textContent = defaultMode;
@@ -74,11 +74,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Chat tab
 
-    if (sendMessageShortcuts.includes(event.key) && currentTab === 1) {
-      sendChatMessage();
+    if (sendMessageShortcuts.includes(event.key) && currentTab === 1 && !event.shiftKey) {
+      sendChatMessage(event);
     }
 
-    if (toggleImagesShortcuts.includes(event.key) && currentTab === 1 && document.activeElement !== messageInput) {
+    if (toggleImagesShortcuts.includes(event.key) && currentTab === 1 && document.activeElement !== messageTextarea) {
       toggleChatImageVisibility();
     }
 
@@ -209,16 +209,17 @@ window.addEventListener('DOMContentLoaded', () => {
     currentPageSpan.textContent = currentImage + 1;
   }
 
-  function sendChatMessage () {
-    const message = messageInput.value;
+  function sendChatMessage (event) {
+    event.preventDefault();
 
-    if (message === '') {
+    const message = messageTextarea.value;
+    messageTextarea.value = '';
+
+    if (/^\s*$/u.test(message)) {
       return;
     }
 
     window.messages.sendMessage(message);
-
-    messageInput.value = '';
   }
 
   function switchTab () {
