@@ -82,6 +82,8 @@ For dual 1080p monitor setups, the `x` settings should be 360.
 * Send message: `enter`
 * Toggle chat image visibility: `b`
 
+Additionally, clicking any number will go to that image, i.e. clicking 1 will go to the first image. Holding `ctrl` while clicking a number will change to the respective mode instead.
+
 The shortcuts for toggling visiblity work even when the windows are not focused. All other shortcuts require focus.
 
 When starting the app, by default the main window is revealed and the PDF window is hidden.

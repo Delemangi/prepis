@@ -1,14 +1,11 @@
 // @ts-nocheck
 
-let currentImage = 0;
-let currentMode = 0;
-let currentTab = 0;
-let showImages = false;
-
 /**
+ *
  * Tabs:
  * 0 - Image Viewer
  * 1 - Chat
+ *
  */
 
 // https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values
@@ -24,7 +21,13 @@ const toggleImagesShortcuts = ['b'];
 const opacityStep = 0.05;
 const defaultMode = window.modes.modes[0];
 
+let currentImage = 0;
+let currentMode = 0;
+let currentTab = 0;
+let largeImages = false;
+
 window.addEventListener('DOMContentLoaded', () => {
+  // This has to be declared here because assets is a window global
   let assets = window.assets[defaultMode];
 
   const image = document.querySelector('img#image');
@@ -56,20 +59,24 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // eslint-disable-next-line complexity
   document.addEventListener('keydown', (event) => {
-    const eventNumber = Number.parseInt(event.key, 10);
+    const eventKey = Number.parseInt(event.key, 10);
 
     // Image Viewer tab
 
     if (moveLeftShortcuts.includes(event.key) && currentTab === 0) {
-      moveLeft();
+      moveImageLeft();
     }
 
     if (moveRightShortcuts.includes(event.key) && currentTab === 0) {
-      moveRight();
+      moveImageRight();
     }
 
-    if (!Number.isNaN(eventNumber) && document.activeElement !== imageNumberInput && eventNumber > 0 && eventNumber <= assets.length && currentTab === 0) {
-      moveTo(eventNumber);
+    if (!Number.isNaN(eventKey) && !event.ctrlKey && document.activeElement !== imageNumberInput && currentTab === 0) {
+      moveImageTo(eventKey);
+    }
+
+    if (!Number.isNaN(eventKey) && event.ctrlKey && document.activeElement !== imageNumberInput && currentTab === 0) {
+      moveModeTo(eventKey - 1);
     }
 
     // Chat tab
@@ -79,7 +86,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     if (toggleImagesShortcuts.includes(event.key) && currentTab === 1 && document.activeElement !== messageTextarea) {
-      toggleChatImageVisibility();
+      toggleChatImageSize();
     }
 
     // All tabs
@@ -95,15 +102,27 @@ window.addEventListener('DOMContentLoaded', () => {
     if (switchTabShortcuts.includes(event.key) && !inputs.includes(document.activeElement)) {
       switchTab();
     }
-
-    // After all shortcuts
-
-    updateImage();
   });
 
-  opacitySliderInput.addEventListener('input', () => {
-    setOpacity(Number.parseFloat(opacitySliderInput.value) / 100);
-  });
+  nextImageButton.addEventListener('click', moveImageRight);
+
+  previousImageButton.addEventListener('click', moveImageLeft);
+
+  imageViewerTabButton.addEventListener('click', setImageViewerTab);
+
+  chatTabButton.addEventListener('click', setChatTab);
+
+  sendButton.addEventListener('click', sendChatMessage);
+
+  toggleImagesButton.addEventListener('click', toggleChatImageSize);
+
+  nextModeButton.addEventListener('click', nextMode);
+
+  firstImageButton.addEventListener('click', () => moveImageTo(1));
+
+  toggleVisibilityButton.addEventListener('click', () => window.hide.hide());
+
+  opacitySliderInput.addEventListener('input', () => setOpacity(Number.parseFloat(opacitySliderInput.value) / 100));
 
   imageNumberInput.addEventListener('input', () => {
     const value = imageNumberInput.value;
@@ -112,82 +131,43 @@ window.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    moveTo(value);
-    updateImage();
-  });
-
-  nextImageButton.addEventListener('click', () => {
-    moveRight();
-    updateImage();
-  });
-
-  previousImageButton.addEventListener('click', () => {
-    moveLeft();
-    updateImage();
-  });
-
-  nextModeButton.addEventListener('click', () => {
-    currentMode = (currentMode + 1) % window.modes.modes.length;
-    assets = window.assets[window.modes.modes[currentMode]];
-
-    currentImage = 0;
-    updateImage();
-
-    currentModeSpan.textContent = window.modes.modes[currentMode];
-    currentPageSpan.textContent = 1;
-  });
-
-  imageViewerTabButton.addEventListener('click', setImageViewerTab);
-
-  chatTabButton.addEventListener('click', setChatTab);
-
-  sendButton.addEventListener('click', sendChatMessage);
-
-  toggleImagesButton.addEventListener('click', toggleChatImageVisibility);
-
-  firstImageButton.addEventListener('click', () => {
-    moveTo(1);
-    updateImage();
-  });
-
-  toggleVisibilityButton.addEventListener('click', () => {
-    window.hide.hide();
+    moveImageTo(value);
   });
 
   // eslint-disable-next-line unicorn/consistent-function-scoping
-  function moveLeft () {
+  function moveImageLeft () {
     currentImage -= 1;
 
     if (currentImage < 0) {
       currentImage = 0;
     }
 
-    currentPageSpan.textContent = currentImage + 1;
+    updateImage();
   }
 
-  function moveRight () {
+  function moveImageRight () {
     currentImage += 1;
 
     if (currentImage > assets.length - 1) {
       currentImage = assets.length - 1;
     }
 
-    currentPageSpan.textContent = currentImage + 1;
+    updateImage();
   }
 
-  function moveTo (index) {
+  function moveImageTo (index) {
     if (index < 0 || index > assets.length - 1) {
       return;
     }
 
     currentImage = index - 1;
-    currentPageSpan.textContent = currentImage + 1;
+
+    updateImage();
   }
 
   function updateImage () {
-    if (image) {
-      image.src = assets[currentImage];
-    }
+    image.src = assets[currentImage];
+    currentPageSpan.textContent = currentImage + 1;
   }
 
   function changeOpacity (step) {
@@ -242,20 +222,48 @@ window.addEventListener('DOMContentLoaded', () => {
     document.querySelector('div#image-viewer').style.display = 'flex';
   }
 
-  function toggleChatImageVisibility () {
+  function toggleChatImageSize () {
     const root = document.querySelector(':root');
     const messages = document.querySelector('div#messages');
 
-    if (showImages) {
-      showImages = false;
+    if (largeImages) {
+      largeImages = false;
       root.style.setProperty('--message-image-max-width', '5%');
       currentImagesSpan.textContent = 'Small';
     } else {
-      showImages = true;
+      largeImages = true;
       root.style.setProperty('--message-image-max-width', '100%');
       currentImagesSpan.textContent = 'Normal';
     }
 
     messages.scrollTop = messages.scrollHeight;
+  }
+
+  function nextMode () {
+    currentMode += 1;
+    currentImage = 0;
+
+    if (currentMode > window.modes.modes.length - 1) {
+      currentMode = 0;
+    }
+
+    updateMode();
+  }
+
+  function moveModeTo (mode) {
+    if (mode < 0 || mode > window.modes.modes.length - 1) {
+      return;
+    }
+
+    currentMode = mode;
+    currentImage = 0;
+
+    updateMode();
+  }
+
+  function updateMode () {
+    assets = window.assets[window.modes.modes[currentMode]];
+    currentModeSpan.textContent = window.modes.modes[currentMode];
+    updateImage();
   }
 });
