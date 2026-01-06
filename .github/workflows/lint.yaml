@@ -8,13 +8,6 @@ on:
       - "package.json"
       - "package-lock.json"
       - "eslint.config.js"
-  pull_request:
-    paths:
-      - ".github/workflows/lint.yaml"
-      - "*.js"
-      - "package.json"
-      - "package-lock.json"
-      - "eslint.config.js"
   workflow_dispatch:
 
 permissions:
