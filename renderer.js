@@ -57,7 +57,6 @@ window.addEventListener('DOMContentLoaded', () => {
   currentPageSpan.textContent = currentImage + 1;
   currentImagesSpan.textContent = 'Small';
 
-  // eslint-disable-next-line complexity
   document.addEventListener('keydown', (event) => {
     const eventKey = Number.parseInt(event.key, 10);
 
@@ -134,7 +133,6 @@ window.addEventListener('DOMContentLoaded', () => {
     moveImageTo(value);
   });
 
-  // eslint-disable-next-line unicorn/consistent-function-scoping
   function moveImageLeft () {
     currentImage -= 1;
 
