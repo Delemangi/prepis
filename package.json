@@ -4,6 +4,8 @@
   "description": "Cheating tool for exams",
   "main": "main.js",
   "scripts": {
+    "format": "eslint . --cache --fix",
+    "lint": "eslint . --cache",
     "start": "electron ."
   },
   "author": "Delemangi",
@@ -18,11 +20,12 @@
   "devDependencies": {
     "electron": "^19.0.4",
     "electron-pdf-window": "^1.0.0",
-    "eslint": "^8.17.0",
-    "eslint-config-canonical": "^35.0.1"
+    "eslint": "^9.39.2",
+    "eslint-config-imperium": "^3.1.0"
   },
   "dependencies": {
     "discord-api-types": "^0.33.5",
     "discord.js": "github:legendhimslef/discord.js#v13"
-  }
+  },
+  "type": "module"
 }
