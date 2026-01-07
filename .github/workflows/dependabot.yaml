@@ -1,8 +1,6 @@
 name: Dependabot Auto-Merge
 
-on:
-  pull_request:
-  push:
+on: pull_request
 
 permissions:
   contents: write
@@ -12,7 +10,7 @@ jobs:
   dependabot:
     name: Dependabot Auto-Merge
     runs-on: ubuntu-latest
-    # if: github.actor == 'dependabot[bot]'
+    if: github.actor == 'dependabot[bot]'
 
     steps:
       - uses: dependabot/fetch-metadata@v1
