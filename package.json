@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "electron": "^19.0.4",
-    "electron-pdf-window": "^1.0.0",
+    "electron-pdf-window": "^1.0.12",
     "eslint": "^9.39.2",
     "eslint-config-imperium": "^3.1.0"
   },

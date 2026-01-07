@@ -1,16 +1,5 @@
-import {
-  base,
-  node,
-  perfectionist,
-  prettier,
-} from 'eslint-config-imperium';
-
 export default [
   {
-    ignores: ['dist/'],
+    ignores: ['dist/', 'node_modules/'],
   },
-  base,
-  node,
-  prettier,
-  perfectionist,
 ];
