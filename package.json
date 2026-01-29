@@ -18,7 +18,7 @@
     "url": "https://github.com/Delemangi/prepis/issues"
   },
   "devDependencies": {
-    "electron": "^39.2.7",
+    "electron": "^40.1.0",
     "electron-pdf-window": "^1.0.12",
     "eslint": "^9.39.2",
     "eslint-config-imperium": "^3.2.0"
