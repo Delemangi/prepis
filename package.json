@@ -24,7 +24,7 @@
     "eslint-config-imperium": "^3.2.0"
   },
   "dependencies": {
-    "discord-api-types": "^0.38.37",
+    "discord-api-types": "^0.38.38",
     "discord.js": "^14.25.1"
   },
   "type": "module"
