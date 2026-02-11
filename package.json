@@ -21,7 +21,7 @@
     "electron": "^40.2.1",
     "electron-pdf-window": "^1.0.12",
     "eslint": "^9.39.2",
-    "eslint-config-imperium": "^3.3.0"
+    "eslint-config-imperium": "^3.4.0"
   },
   "dependencies": {
     "discord-api-types": "^0.38.38",
