@@ -6,6 +6,27 @@ Supports image viewing and chatting through Discord.
 
 It's meant for Windows, and it probably doesn't work (fully) on any other OS.
 
+## Project Structure
+
+This project now uses TypeScript for better type safety and maintainability:
+
+```
+prepis/
+├── electron-app/       # TypeScript Electron application
+│   ├── src/            # TypeScript source files
+│   │   ├── main.ts     # Main process
+│   │   ├── preload.ts  # Preload script
+│   │   └── renderer.ts # Renderer process
+│   ├── public/         # Static assets (HTML/CSS)
+│   │   ├── index.html
+│   │   └── styles.css
+│   ├── dist/           # Compiled JavaScript (auto-generated)
+│   └── tsconfig.json   # TypeScript configuration
+├── image-processor/    # Python image processing tool
+│   └── image_processor.py
+└── package.json        # Node.js configuration
+```
+
 ## Installing
 
 1. `git clone git@github.com:Delemangi/prepis.git`
@@ -14,7 +35,13 @@ It's meant for Windows, and it probably doesn't work (fully) on any other OS.
 
 ## Starting
 
-1. `npm run start`
+1. `npm run start` (automatically builds TypeScript and starts the app)
+
+Alternatively, for development:
+
+- `npm run build` - Build TypeScript once
+- `npm run watch` - Watch and rebuild on changes
+- `npm run dev` - Build and start the app
 
 The terminal will remain on and frozen while running, so it's best to hide it on a different desktop (`Windows Key + Tab`).
 
@@ -22,26 +49,19 @@ The terminal will remain on and frozen while running, so it's best to hide it on
 
 1. Create a `config.json` file in the project directory. It should have the following structure:
 
-    ```json
-    {
-        "token": "your_bot_token",
-        "channels": [
-            "discord_channel_id",
-            "other_discord_channel_id"
-        ],
-        "modes": [
-            "theory",
-            "practical",
-            "exercises"
-        ],
-        "x": 180,
-        "y": 550,
-        "width": 620,
-        "height": 450
-    }
-    ```
+   ```json
+   {
+     "token": "your_bot_token",
+     "channels": ["discord_channel_id", "other_discord_channel_id"],
+     "modes": ["theory", "practical", "exercises"],
+     "x": 180,
+     "y": 550,
+     "width": 620,
+     "height": 450
+   }
+   ```
 
-    The `x` and `y` properties are the x and y offsets, respectively. The default values given here fit a one monitor 1080p setup.
+   The `x` and `y` properties are the x and y offsets, respectively. The default values given here fit a one monitor 1080p setup.
 
 2. Create an `assets` folder in the project directory, and create folders with any name for the image sets. Put all images in the corresponding folders. The folder names should be specified in the `modes` property in `config.json`.
 
@@ -70,17 +90,17 @@ For dual 1080p monitor setups, the `x` settings should be 360.
 
 ## Shortcuts
 
-* Move to left image: `a`, `left arrow`
-* Move to right image: `d`, `right arrow`
-* Increase opacity (main window only): `w`, `up arrow`
-* Decrease opacity (main window only): `s`, `down arrow`
-* Increase opacity (PDF window only): `alt + w`
-* Decrease opacity (PDF window only): `alt + s`
-* Toggle visibility (main window only): `escape`
-* Toggle visibility (PDF window only): `shift + escape`
-* Switch tabs: `m`
-* Send message: `enter`
-* Toggle chat image visibility: `b`
+- Move to left image: `a`, `left arrow`
+- Move to right image: `d`, `right arrow`
+- Increase opacity (main window only): `w`, `up arrow`
+- Decrease opacity (main window only): `s`, `down arrow`
+- Increase opacity (PDF window only): `alt + w`
+- Decrease opacity (PDF window only): `alt + s`
+- Toggle visibility (main window only): `escape`
+- Toggle visibility (PDF window only): `shift + escape`
+- Switch tabs: `m`
+- Send message: `enter`
+- Toggle chat image visibility: `b`
 
 Additionally, clicking any number will go to that image, i.e. clicking 1 will go to the first image. Holding `ctrl` while clicking a number will change to the respective mode instead.
 

@@ -2,11 +2,15 @@
   "name": "prepis",
   "version": "1.0.0",
   "description": "Cheating tool for exams",
-  "main": "main.js",
+  "type": "module",
+  "main": "electron-app/dist/main.js",
   "scripts": {
+    "build": "tsc -p electron-app/tsconfig.json",
+    "watch": "tsc -p electron-app/tsconfig.json --watch",
     "format": "eslint . --cache --fix",
     "lint": "eslint . --cache",
-    "start": "electron ."
+    "start": "npm run build && electron .",
+    "dev": "npm run build && electron ."
   },
   "author": "Delemangi",
   "homepage": "https://github.com/Delemangi/prepis",
@@ -18,14 +22,14 @@
     "url": "https://github.com/Delemangi/prepis/issues"
   },
   "devDependencies": {
+    "@types/node": "^22.10.5",
     "electron": "^39.2.7",
-    "electron-pdf-window": "^1.0.12",
     "eslint": "^9.39.2",
-    "eslint-config-imperium": "^3.2.0"
+    "eslint-config-imperium": "^3.2.0",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "discord-api-types": "^0.38.37",
     "discord.js": "^14.25.1"
-  },
-  "type": "module"
+  }
 }
