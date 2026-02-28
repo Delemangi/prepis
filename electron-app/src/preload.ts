@@ -1,6 +1,7 @@
 import * as discord from 'discord.js';
 import * as electron from 'electron';
 import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 import config from '../config.json' with { type: 'json' };
 
@@ -11,7 +12,8 @@ const modes = config.config.modes;
 const assets: { [key: string]: string[] } = {};
 
 for (const mode of modes) {
-  assets[mode] = fs.readdirSync(`./assets/${mode}`).map((file) => `./assets/${mode}/${file}`);
+  const dir = path.resolve(`./assets/${mode}`);
+  assets[mode] = fs.readdirSync(dir).map((file) => `file://${path.join(dir, file).replaceAll('\\', '/')}`);
 }
 
 let client: discord.Client | undefined;

@@ -22,6 +22,7 @@ type WindowOptions = {
   transparent: boolean;
   webPreferences: {
     preload: string;
+    sandbox?: boolean;
   };
   width: number;
   x: number;
@@ -46,7 +47,8 @@ const options: WindowOptions = {
   title: '',
   transparent: true,
   webPreferences: {
-    preload: path.join(import.meta.dirname, 'preload.js')
+    preload: path.join(import.meta.dirname, 'preload.js'),
+    sandbox: false
   },
   width: config.config.width,
   x: config.config.x,
@@ -86,43 +88,47 @@ const createPDFWindow = (): void => {
   pdf.minimize();
 };
 
-await electron.app.whenReady();
+// eslint-disable-next-line unicorn/prefer-top-level-await
+void electron.app.whenReady().then(() => {
+  createMainWindow();
+  createPDFWindow();
 
-createMainWindow();
-createPDFWindow();
+  electron.globalShortcut.register('Esc', () => {
+    if (main.isMinimized()) {
+      main.restore();
+    } else {
+      main.minimize();
+    }
+  });
 
-electron.globalShortcut.register('Esc', () => {
-  if (main.isMinimized()) {
-    main.restore();
-  } else {
+  electron.globalShortcut.register('Shift+Esc', () => {
+    if (pdf.isMinimized()) {
+      pdf.restore();
+    } else {
+      pdf.minimize();
+    }
+  });
+
+  electron.globalShortcut.register('Alt+S', () => {
+    if (!pdf.isMinimized()) {
+      const opacity = pdf.getOpacity();
+      pdf.setOpacity(Math.min(1, Math.max(0.05, opacity - 0.05)));
+    }
+  });
+
+  electron.globalShortcut.register('Alt+W', () => {
+    if (!pdf.isMinimized()) {
+      const opacity = pdf.getOpacity();
+      pdf.setOpacity(Math.min(1, Math.max(0.05, opacity + 0.05)));
+    }
+  });
+
+  electron.ipcMain.on('hide', () => {
     main.minimize();
-  }
-});
+  });
 
-electron.globalShortcut.register('Shift+Esc', () => {
-  if (pdf.isMinimized()) {
-    pdf.restore();
-  } else {
-    pdf.minimize();
-  }
-});
-
-electron.globalShortcut.register('Alt+S', () => {
-  if (!pdf.isMinimized()) {
-    const opacity = pdf.getOpacity();
-    pdf.setOpacity(Math.min(1, Math.max(0.05, opacity - 0.05)));
-  }
-});
-
-electron.globalShortcut.register('Alt+W', () => {
-  if (!pdf.isMinimized()) {
-    const opacity = pdf.getOpacity();
-    pdf.setOpacity(Math.min(1, Math.max(0.05, opacity + 0.05)));
-  }
-});
-
-electron.ipcMain.on('hide', () => {
-  main.minimize();
+  // eslint-disable-next-line unicorn/no-useless-undefined
+  return undefined;
 });
 
 electron.app.on('window-all-closed', () => {
