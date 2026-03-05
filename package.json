@@ -22,7 +22,7 @@
     "url": "https://github.com/Delemangi/prepis/issues"
   },
   "devDependencies": {
-    "@types/node": "^22.10.5",
+    "@types/node": "^25.3.3",
     "electron": "^40.6.1",
     "eslint": "^9.39.2",
     "eslint-config-imperium": "^3.4.0",
