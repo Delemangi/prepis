@@ -12,6 +12,7 @@ It's meant for Windows, and it probably doesn't work (fully) on any other OS.
 prepis/
 ├── electron-app/       # TypeScript Electron application
 │   ├── src/            # TypeScript source files
+│   │   ├── config.ts   # Configuration loader
 │   │   ├── main.ts     # Main process
 │   │   ├── preload.ts  # Preload script
 │   │   └── renderer.ts # Renderer process
@@ -19,6 +20,7 @@ prepis/
 │   │   ├── index.html
 │   │   └── styles.css
 │   ├── dist/           # Compiled JavaScript (auto-generated)
+│   ├── config.json.example
 │   ├── package.json    # Node.js configuration
 │   ├── eslint.config.js
 │   └── tsconfig.json   # TypeScript configuration
@@ -49,7 +51,7 @@ The terminal will remain on and frozen while running, so it's best to hide it on
 
 ## Configuration
 
-1. Create a `config.json` file in the project directory. It should have the following structure:
+1. Create a `config.json` file in the `electron-app/` directory. It should have the following structure:
 
    ```json
    {
