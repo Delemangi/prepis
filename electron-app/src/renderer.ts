@@ -6,7 +6,7 @@
 
 // https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values
 
-import type { Config } from './json';
+import type { Config } from './config';
 
 type DOMElements = {
   currentImagesSpan: HTMLSpanElement;

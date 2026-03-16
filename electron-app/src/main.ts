@@ -1,7 +1,7 @@
 import * as electron from 'electron';
 import * as path from 'node:path';
 
-import config from '../config.json' with { type: 'json' };
+import { config } from './config.js';
 
 type WindowOptions = {
   alwaysOnTop: boolean;
@@ -37,7 +37,7 @@ const options: WindowOptions = {
   fullscreen: false,
   fullscreenable: false,
   hasShadow: false,
-  height: config.config.height,
+  height: config.height,
   maximizable: false,
   minimizable: false,
   movable: false,
@@ -50,9 +50,9 @@ const options: WindowOptions = {
     preload: path.join(import.meta.dirname, 'preload.js'),
     sandbox: false
   },
-  width: config.config.width,
-  x: config.config.x,
-  y: config.config.y
+  width: config.width,
+  x: config.x,
+  y: config.y
 };
 
 let main: electron.BrowserWindow;

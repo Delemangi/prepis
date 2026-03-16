@@ -3,12 +3,12 @@ import * as electron from 'electron';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-import config from '../config.json' with { type: 'json' };
+import { config } from './config.js';
 
 const messagesSelector = 'div#messages';
 const statusSymbol = '•';
 
-const modes = config.config.modes;
+const modes = config.modes;
 const assets: { [key: string]: string[] } = {};
 
 for (const mode of modes) {
@@ -78,7 +78,7 @@ const sendMessage = (text: string): void => {
     return;
   }
 
-  for (const channel of config.config.channels) {
+  for (const channel of config.channels) {
     const channelObj = client.channels.cache.get(channel);
     if (channelObj?.isTextBased()) {
       void (channelObj as discord.TextChannel).send(message);
@@ -122,7 +122,7 @@ const createDiscordBot = (): void => {
       return;
     }
 
-    if (!config.config.channels.includes(message.channel.id)) {
+    if (!config.channels.includes(message.channel.id)) {
       return;
     }
 
@@ -137,7 +137,7 @@ const createDiscordBot = (): void => {
     showStatusMessage(message);
   });
 
-  void client.login(config.config.token)
+  void client.login(config.token)
     .then(() => {
       showStatusMessage('Discord bot logged in.');
 
