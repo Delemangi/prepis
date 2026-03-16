@@ -51,13 +51,15 @@ The terminal will remain on and frozen while running, so it's best to hide it on
 
    ```json
    {
-     "token": "your_bot_token",
-     "channels": ["discord_channel_id", "other_discord_channel_id"],
-     "modes": ["theory", "practical", "exercises"],
-     "x": 180,
-     "y": 550,
-     "width": 620,
-     "height": 450
+     "config": {
+       "token": "your_bot_token",
+       "channels": ["discord_channel_id", "other_discord_channel_id"],
+       "modes": ["theory", "practical", "exercises"],
+       "x": 180,
+       "y": 550,
+       "width": 620,
+       "height": 450
+     }
    }
    ```
 
