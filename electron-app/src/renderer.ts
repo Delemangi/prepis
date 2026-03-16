@@ -8,6 +8,16 @@
 
 import type { Config } from './json';
 
+type DOMElements = {
+  currentImagesSpan: HTMLSpanElement;
+  currentModeSpan: HTMLSpanElement;
+  currentPageSpan: HTMLSpanElement;
+  image: HTMLImageElement;
+  imageNumberInput: HTMLInputElement;
+  messageTextarea: HTMLTextAreaElement;
+  opacitySliderInput: HTMLInputElement;
+};
+
 type WindowExtensions = {
   assets: { [key: string]: string[] };
   config: { config: Config };
@@ -33,15 +43,236 @@ const toggleImagesShortcuts = new Set(['b']);
 const opacityStep = 0.05;
 const defaultMode = w.modes.modes[0];
 
+let assets = w.assets[defaultMode];
 let currentImage = 0;
 let currentMode = 0;
 let currentTab = 0;
 let largeImages = false;
 
-window.addEventListener('DOMContentLoaded', () => {
-  // This has to be declared here because assets is a window global
-  let assets = w.assets[defaultMode];
+const updateImage = (elements: DOMElements): void => {
+  elements.image.src = assets[currentImage];
+  elements.currentPageSpan.textContent = String(currentImage + 1);
+};
 
+const updateMode = (elements: DOMElements): void => {
+  assets = w.assets[w.modes.modes[currentMode]];
+  elements.currentModeSpan.textContent = w.modes.modes[currentMode];
+  updateImage(elements);
+};
+
+const moveImageLeft = (elements: DOMElements): void => {
+  currentImage -= 1;
+
+  if (currentImage < 0) {
+    currentImage = 0;
+  }
+
+  updateImage(elements);
+};
+
+const moveImageRight = (elements: DOMElements): void => {
+  currentImage += 1;
+
+  if (currentImage > assets.length - 1) {
+    currentImage = assets.length - 1;
+  }
+
+  updateImage(elements);
+};
+
+const moveImageTo = (index: number, elements: DOMElements): void => {
+  if (index < 0 || index > assets.length - 1) {
+    return;
+  }
+
+  currentImage = index - 1;
+
+  updateImage(elements);
+};
+
+const setOpacity = (value: number, elements: DOMElements): void => {
+  const opacity = Math.max(0.05, Math.min(1, value));
+
+  document.body.style.opacity = String(opacity);
+  elements.opacitySliderInput.value = String(opacity * 100);
+
+  elements.currentPageSpan.textContent = String(currentImage + 1);
+};
+
+const changeOpacity = (step: number, elements: DOMElements): void => {
+  let currentOpacity = Number.parseFloat(document.body.style.opacity);
+
+  if (Number.isNaN(currentOpacity)) {
+    currentOpacity = 1;
+  }
+
+  setOpacity(currentOpacity + step, elements);
+};
+
+const sendChatMessage = (event: Event, elements: DOMElements): void => {
+  event.preventDefault();
+
+  const message = elements.messageTextarea.value;
+  elements.messageTextarea.value = '';
+
+  if ((/^\s*$/u).test(message)) {
+    return;
+  }
+
+  w.messages.sendMessage(message);
+};
+
+const setChatTab = (): void => {
+  currentTab = 1;
+  const imageViewer = document.querySelector<HTMLDivElement>('div#image-viewer');
+  const chat = document.querySelector<HTMLDivElement>('div#chat');
+
+  if (imageViewer && chat) {
+    imageViewer.style.display = 'none';
+    chat.style.display = 'flex';
+  }
+};
+
+const setImageViewerTab = (): void => {
+  currentTab = 0;
+  const imageViewer = document.querySelector<HTMLDivElement>('div#image-viewer');
+  const chat = document.querySelector<HTMLDivElement>('div#chat');
+
+  if (imageViewer && chat) {
+    chat.style.display = 'none';
+    imageViewer.style.display = 'flex';
+  }
+};
+
+const switchTab = (): void => {
+  if (currentTab === 0) {
+    setChatTab();
+  } else {
+    setImageViewerTab();
+  }
+};
+
+const toggleChatImageSize = (elements: DOMElements): void => {
+  const root = document.querySelector<HTMLElement>(':root');
+  const messages = document.querySelector<HTMLDivElement>('div#messages');
+
+  if (!root || !messages) {
+    return;
+  }
+
+  if (largeImages) {
+    largeImages = false;
+    root.style.setProperty('--message-image-max-width', '5%');
+    elements.currentImagesSpan.textContent = 'Small';
+  } else {
+    largeImages = true;
+    root.style.setProperty('--message-image-max-width', '100%');
+    elements.currentImagesSpan.textContent = 'Normal';
+  }
+
+  messages.scrollTop = messages.scrollHeight;
+};
+
+const nextMode = (elements: DOMElements): void => {
+  currentMode += 1;
+  currentImage = 0;
+
+  if (currentMode > w.modes.modes.length - 1) {
+    currentMode = 0;
+  }
+
+  updateMode(elements);
+};
+
+const moveModeTo = (mode: number, elements: DOMElements): void => {
+  if (mode < 0 || mode > w.modes.modes.length - 1) {
+    return;
+  }
+
+  currentMode = mode;
+  currentImage = 0;
+
+  updateMode(elements);
+};
+
+const handleKeydown = (
+  event: KeyboardEvent,
+  elements: DOMElements,
+  inputs: Set<HTMLInputElement | HTMLTextAreaElement>
+): void => {
+  const eventKey = Number.parseInt(event.key);
+
+  // Image Viewer tab
+
+  if (moveLeftShortcuts.has(event.key) && currentTab === 0) {
+    moveImageLeft(elements);
+  }
+
+  if (moveRightShortcuts.has(event.key) && currentTab === 0) {
+    moveImageRight(elements);
+  }
+
+  if (
+    !Number.isNaN(eventKey) &&
+    !event.ctrlKey &&
+    document.activeElement !== elements.imageNumberInput &&
+    currentTab === 0
+  ) {
+    moveImageTo(eventKey, elements);
+  }
+
+  if (
+    !Number.isNaN(eventKey) &&
+    event.ctrlKey &&
+    document.activeElement !== elements.imageNumberInput &&
+    currentTab === 0
+  ) {
+    moveModeTo(eventKey - 1, elements);
+  }
+
+  // Chat tab
+
+  if (
+    sendMessageShortcuts.has(event.key) &&
+    currentTab === 1 &&
+    !event.shiftKey
+  ) {
+    sendChatMessage(event, elements);
+  }
+
+  if (
+    toggleImagesShortcuts.has(event.key) &&
+    currentTab === 1 &&
+    document.activeElement !== elements.messageTextarea
+  ) {
+    toggleChatImageSize(elements);
+  }
+
+  // All tabs
+
+  if (
+    increaseOpacityShortcuts.has(event.key) &&
+    !inputs.has(document.activeElement as HTMLInputElement | HTMLTextAreaElement)
+  ) {
+    changeOpacity(opacityStep, elements);
+  }
+
+  if (
+    decreaseOpacityShortcuts.has(event.key) &&
+    !inputs.has(document.activeElement as HTMLInputElement | HTMLTextAreaElement)
+  ) {
+    changeOpacity(-opacityStep, elements);
+  }
+
+  if (
+    switchTabShortcuts.has(event.key) &&
+    !inputs.has(document.activeElement as HTMLInputElement | HTMLTextAreaElement)
+  ) {
+    switchTab();
+  }
+};
+
+window.addEventListener('DOMContentLoaded', () => {
   const image = document.querySelector<HTMLImageElement>('img#image');
   const currentModeSpan = document.querySelector<HTMLSpanElement>('span#current-mode');
   const currentPageSpan = document.querySelector<HTMLSpanElement>('span#current-page');
@@ -82,6 +313,16 @@ window.addEventListener('DOMContentLoaded', () => {
     throw new Error('Failed to find required DOM elements');
   }
 
+  const elements: DOMElements = {
+    currentImagesSpan,
+    currentModeSpan,
+    currentPageSpan,
+    image,
+    imageNumberInput,
+    messageTextarea,
+    opacitySliderInput
+  };
+
   const inputs = new Set([imageNumberInput, messageTextarea]);
 
   image.src = assets[currentImage];
@@ -89,237 +330,35 @@ window.addEventListener('DOMContentLoaded', () => {
   currentPageSpan.textContent = String(currentImage + 1);
   currentImagesSpan.textContent = 'Small';
 
-  // Function declarations - must be before event listener setup
-  const updateImage = (): void => {
-    image.src = assets[currentImage];
-    currentPageSpan.textContent = String(currentImage + 1);
-  };
-
-  const updateMode = (): void => {
-    assets = w.assets[w.modes.modes[currentMode]];
-    currentModeSpan.textContent = w.modes.modes[currentMode];
-    updateImage();
-  };
-
-  const moveImageLeft = (): void => {
-    currentImage -= 1;
-
-    if (currentImage < 0) {
-      currentImage = 0;
-    }
-
-    updateImage();
-  };
-
-  const moveImageRight = (): void => {
-    currentImage += 1;
-
-    if (currentImage > assets.length - 1) {
-      currentImage = assets.length - 1;
-    }
-
-    updateImage();
-  };
-
-  const moveImageTo = (index: number): void => {
-    if (index < 0 || index > assets.length - 1) {
-      return;
-    }
-
-    currentImage = index - 1;
-
-    updateImage();
-  };
-
-  const setOpacity = (value: number): void => {
-    const opacity = Math.max(0.05, Math.min(1, value));
-
-    document.body.style.opacity = String(opacity);
-    opacitySliderInput.value = String(opacity * 100);
-
-    currentPageSpan.textContent = String(currentImage + 1);
-  };
-
-  const changeOpacity = (step: number): void => {
-    let currentOpacity = Number.parseFloat(document.body.style.opacity);
-
-    if (Number.isNaN(currentOpacity)) {
-      currentOpacity = 1;
-    }
-
-    setOpacity(currentOpacity + step);
-  };
-
-  const sendChatMessage = (event: Event): void => {
-    event.preventDefault();
-
-    const message = messageTextarea.value;
-    messageTextarea.value = '';
-
-    if ((/^\s*$/u).test(message)) {
-      return;
-    }
-
-    w.messages.sendMessage(message);
-  };
-
-  const setChatTab = (): void => {
-    currentTab = 1;
-    const imageViewer = document.querySelector<HTMLDivElement>('div#image-viewer');
-    const chat = document.querySelector<HTMLDivElement>('div#chat');
-
-    if (imageViewer && chat) {
-      imageViewer.style.display = 'none';
-      chat.style.display = 'flex';
-    }
-  };
-
-  const setImageViewerTab = (): void => {
-    currentTab = 0;
-    const imageViewer = document.querySelector<HTMLDivElement>('div#image-viewer');
-    const chat = document.querySelector<HTMLDivElement>('div#chat');
-
-    if (imageViewer && chat) {
-      chat.style.display = 'none';
-      imageViewer.style.display = 'flex';
-    }
-  };
-
-  const switchTab = (): void => {
-    if (currentTab === 0) {
-      setChatTab();
-    } else {
-      setImageViewerTab();
-    }
-  };
-
-  const toggleChatImageSize = (): void => {
-    const root = document.querySelector<HTMLElement>(':root');
-    const messages = document.querySelector<HTMLDivElement>('div#messages');
-
-    if (!root || !messages) {
-      return;
-    }
-
-    if (largeImages) {
-      largeImages = false;
-      root.style.setProperty('--message-image-max-width', '5%');
-      currentImagesSpan.textContent = 'Small';
-    } else {
-      largeImages = true;
-      root.style.setProperty('--message-image-max-width', '100%');
-      currentImagesSpan.textContent = 'Normal';
-    }
-
-    messages.scrollTop = messages.scrollHeight;
-  };
-
-  const nextMode = (): void => {
-    currentMode += 1;
-    currentImage = 0;
-
-    if (currentMode > w.modes.modes.length - 1) {
-      currentMode = 0;
-    }
-
-    updateMode();
-  };
-
-  const moveModeTo = (mode: number): void => {
-    if (mode < 0 || mode > w.modes.modes.length - 1) {
-      return;
-    }
-
-    currentMode = mode;
-    currentImage = 0;
-
-    updateMode();
-  };
-
   // Event listeners
   document.addEventListener('keydown', (event: KeyboardEvent) => {
-    const eventKey = Number.parseInt(event.key);
-
-    // Image Viewer tab
-
-    if (moveLeftShortcuts.has(event.key) && currentTab === 0) {
-      moveImageLeft();
-    }
-
-    if (moveRightShortcuts.has(event.key) && currentTab === 0) {
-      moveImageRight();
-    }
-
-    if (
-      !Number.isNaN(eventKey) &&
-      !event.ctrlKey &&
-      document.activeElement !== imageNumberInput &&
-      currentTab === 0
-    ) {
-      moveImageTo(eventKey);
-    }
-
-    if (
-      !Number.isNaN(eventKey) &&
-      event.ctrlKey &&
-      document.activeElement !== imageNumberInput &&
-      currentTab === 0
-    ) {
-      moveModeTo(eventKey - 1);
-    }
-
-    // Chat tab
-
-    if (
-      sendMessageShortcuts.has(event.key) &&
-      currentTab === 1 &&
-      !event.shiftKey
-    ) {
-      sendChatMessage(event);
-    }
-
-    if (
-      toggleImagesShortcuts.has(event.key) &&
-      currentTab === 1 &&
-      document.activeElement !== messageTextarea
-    ) {
-      toggleChatImageSize();
-    }
-
-    // All tabs
-
-    if (
-      increaseOpacityShortcuts.has(event.key) &&
-      !inputs.has(document.activeElement as HTMLInputElement | HTMLTextAreaElement)
-    ) {
-      changeOpacity(opacityStep);
-    }
-
-    if (
-      decreaseOpacityShortcuts.has(event.key) &&
-      !inputs.has(document.activeElement as HTMLInputElement | HTMLTextAreaElement)
-    ) {
-      changeOpacity(-opacityStep);
-    }
-
-    if (
-      switchTabShortcuts.has(event.key) &&
-      !inputs.has(document.activeElement as HTMLInputElement | HTMLTextAreaElement)
-    ) {
-      switchTab();
-    }
+    handleKeydown(
+      event,
+      elements,
+      inputs
+    );
   });
 
-  nextImageButton.addEventListener('click', moveImageRight);
-  previousImageButton.addEventListener('click', moveImageLeft);
+  nextImageButton.addEventListener('click', () => {
+    moveImageRight(elements);
+  });
+  previousImageButton.addEventListener('click', () => {
+    moveImageLeft(elements);
+  });
   imageViewerTabButton.addEventListener('click', setImageViewerTab);
   chatTabButton.addEventListener('click', setChatTab);
-  sendButton.addEventListener('click', sendChatMessage);
-  toggleImagesButton.addEventListener('click', toggleChatImageSize);
-  nextModeButton.addEventListener('click', nextMode);
+  sendButton.addEventListener('click', (event) => {
+    sendChatMessage(event, elements);
+  });
+  toggleImagesButton.addEventListener('click', () => {
+    toggleChatImageSize(elements);
+  });
+  nextModeButton.addEventListener('click', () => {
+    nextMode(elements);
+  });
 
   firstImageButton.addEventListener('click', (): void => {
-    moveImageTo(1);
+    moveImageTo(1, elements);
   });
 
   toggleVisibilityButton.addEventListener('click', (): void => {
@@ -327,7 +366,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   opacitySliderInput.addEventListener('input', (): void => {
-    setOpacity(Number.parseFloat(opacitySliderInput.value) / 100);
+    setOpacity(Number.parseFloat(opacitySliderInput.value) / 100, elements);
   });
 
   imageNumberInput.addEventListener('input', (): void => {
@@ -337,6 +376,6 @@ window.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    moveImageTo(Number.parseInt(value));
+    moveImageTo(Number.parseInt(value), elements);
   });
 });
