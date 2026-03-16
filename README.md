@@ -8,8 +8,6 @@ It's meant for Windows, and it probably doesn't work (fully) on any other OS.
 
 ## Project Structure
 
-This project now uses TypeScript for better type safety and maintainability:
-
 ```
 prepis/
 ├── electron-app/       # TypeScript Electron application
@@ -21,16 +19,18 @@ prepis/
 │   │   ├── index.html
 │   │   └── styles.css
 │   ├── dist/           # Compiled JavaScript (auto-generated)
+│   ├── package.json    # Node.js configuration
+│   ├── eslint.config.js
 │   └── tsconfig.json   # TypeScript configuration
 ├── image-processor/    # Python image processing tool
 │   └── image_processor.py
-└── package.json        # Node.js configuration
+└── assets/             # User-created image/PDF assets
 ```
 
 ## Installing
 
 1. `git clone git@github.com:Delemangi/prepis.git`
-2. `cd prepis`
+2. `cd prepis/electron-app`
 3. `npm install`
 
 ## Starting
@@ -42,6 +42,8 @@ Alternatively, for development:
 - `npm run build` - Build TypeScript once
 - `npm run watch` - Watch and rebuild on changes
 - `npm run dev` - Build and start the app
+
+All npm commands should be run from the `electron-app/` directory.
 
 The terminal will remain on and frozen while running, so it's best to hide it on a different desktop (`Windows Key + Tab`).
 

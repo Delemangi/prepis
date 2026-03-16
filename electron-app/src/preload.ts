@@ -12,7 +12,7 @@ const modes = config.config.modes;
 const assets: { [key: string]: string[] } = {};
 
 for (const mode of modes) {
-  const dir = path.resolve(`./assets/${mode}`);
+  const dir = path.resolve(`../assets/${mode}`);
   assets[mode] = fs.readdirSync(dir).map((file) => `file://${path.join(dir, file).replaceAll('\\', '/')}`);
 }
 

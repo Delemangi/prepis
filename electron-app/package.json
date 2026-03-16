@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Cheating tool for exams",
   "type": "module",
-  "main": "electron-app/dist/main.js",
+  "main": "dist/main.js",
   "scripts": {
-    "build": "tsc -p electron-app/tsconfig.json",
-    "watch": "tsc -p electron-app/tsconfig.json --watch",
+    "build": "tsc",
+    "watch": "tsc --watch",
     "format": "eslint . --cache --fix",
     "lint": "eslint . --cache",
     "start": "npm run build && electron .",
@@ -23,13 +23,13 @@
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
-    "electron": "^40.7.0",
-    "eslint": "^9.39.2",
+    "electron": "^40.8.2",
+    "eslint": "^9.39.4",
     "eslint-config-imperium": "^3.4.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "discord-api-types": "^0.38.41",
+    "discord-api-types": "^0.38.42",
     "discord.js": "^14.25.1"
   }
 }
