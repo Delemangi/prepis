@@ -29,7 +29,7 @@
     "typescript": "^6.0.2"
   },
   "dependencies": {
-    "discord-api-types": "^0.38.45",
+    "discord-api-types": "^0.38.46",
     "discord.js": "^14.26.2"
   }
 }
