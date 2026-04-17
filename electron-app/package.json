@@ -26,7 +26,7 @@
     "electron": "^41.2.1",
     "eslint": "^9.39.4",
     "eslint-config-imperium": "^3.6.0",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.3"
   },
   "dependencies": {
     "discord-api-types": "^0.38.47",
