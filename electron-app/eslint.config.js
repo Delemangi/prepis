@@ -1,20 +1,16 @@
 import {
-  base,
+  auto,
   browser,
-  node,
-  perfectionist,
-  stylistic,
-  typescript
+  node
 } from 'eslint-config-imperium';
 
-export default [
+const config = [
   {
     ignores: ['**/dist/**']
   },
-  base,
+  ...auto,
   browser,
-  node,
-  typescript,
-  perfectionist,
-  stylistic
+  node
 ];
+
+export default config;
