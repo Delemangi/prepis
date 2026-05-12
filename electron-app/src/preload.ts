@@ -9,10 +9,11 @@ const messagesSelector = 'div#messages';
 const statusSymbol = '•';
 
 const modes = config.modes;
-const assets: { [key: string]: string[] } = {};
+const assets: Record<string, string[]> = {};
 
 for (const mode of modes) {
   const dir = path.resolve(`../assets/${mode}`);
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- dir is derived from the trusted configured mode name under the fixed ../assets directory.
   assets[mode] = fs.readdirSync(dir).map((file) => `file://${path.join(dir, file).replaceAll('\\', '/')}`);
 }
 
@@ -104,7 +105,7 @@ const hide = (): void => {
   electron.ipcRenderer.send('hide');
 };
 
-const createDiscordBot = (): void => {
+const createDiscordBot = async (): Promise<void> => {
   if (client) {
     void client.destroy();
   }
@@ -137,16 +138,12 @@ const createDiscordBot = (): void => {
     showStatusMessage(message);
   });
 
-  void client.login(config.token)
-    .then(() => {
-      showStatusMessage('Discord bot logged in.');
-
-      // eslint-disable-next-line unicorn/no-useless-undefined
-      return undefined;
-    })
-    .catch((error: unknown) => {
-      showStatusMessage(`Discord login error: ${String(error)}`);
-    });
+  try {
+    await client.login(config.token);
+    showStatusMessage('Discord bot logged in.');
+  } catch (error: unknown) {
+    showStatusMessage(`Discord login error: ${String(error)}`);
+  }
 };
 
 electron.contextBridge.exposeInMainWorld('assets', assets);
@@ -156,4 +153,4 @@ electron.contextBridge.exposeInMainWorld('discord', { createDiscordBot });
 electron.contextBridge.exposeInMainWorld('config', { config });
 electron.contextBridge.exposeInMainWorld('hide', { hide });
 
-createDiscordBot();
+void createDiscordBot();

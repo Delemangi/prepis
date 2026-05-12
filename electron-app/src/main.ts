@@ -88,47 +88,43 @@ const createPDFWindow = (): void => {
   pdf.minimize();
 };
 
-// eslint-disable-next-line unicorn/prefer-top-level-await
-void electron.app.whenReady().then(() => {
-  createMainWindow();
-  createPDFWindow();
+await electron.app.whenReady();
 
-  electron.globalShortcut.register('Esc', () => {
-    if (main.isMinimized()) {
-      main.restore();
-    } else {
-      main.minimize();
-    }
-  });
+createMainWindow();
+createPDFWindow();
 
-  electron.globalShortcut.register('Shift+Esc', () => {
-    if (pdf.isMinimized()) {
-      pdf.restore();
-    } else {
-      pdf.minimize();
-    }
-  });
-
-  electron.globalShortcut.register('Alt+S', () => {
-    if (!pdf.isMinimized()) {
-      const opacity = pdf.getOpacity();
-      pdf.setOpacity(Math.min(1, Math.max(0.05, opacity - 0.05)));
-    }
-  });
-
-  electron.globalShortcut.register('Alt+W', () => {
-    if (!pdf.isMinimized()) {
-      const opacity = pdf.getOpacity();
-      pdf.setOpacity(Math.min(1, Math.max(0.05, opacity + 0.05)));
-    }
-  });
-
-  electron.ipcMain.on('hide', () => {
+electron.globalShortcut.register('Esc', () => {
+  if (main.isMinimized()) {
+    main.restore();
+  } else {
     main.minimize();
-  });
+  }
+});
 
-  // eslint-disable-next-line unicorn/no-useless-undefined
-  return undefined;
+electron.globalShortcut.register('Shift+Esc', () => {
+  if (pdf.isMinimized()) {
+    pdf.restore();
+  } else {
+    pdf.minimize();
+  }
+});
+
+electron.globalShortcut.register('Alt+S', () => {
+  if (!pdf.isMinimized()) {
+    const opacity = pdf.getOpacity();
+    pdf.setOpacity(Math.min(1, Math.max(0.05, opacity - 0.05)));
+  }
+});
+
+electron.globalShortcut.register('Alt+W', () => {
+  if (!pdf.isMinimized()) {
+    const opacity = pdf.getOpacity();
+    pdf.setOpacity(Math.min(1, Math.max(0.05, opacity + 0.05)));
+  }
+});
+
+electron.ipcMain.on('hide', () => {
+  main.minimize();
 });
 
 electron.app.on('window-all-closed', () => {

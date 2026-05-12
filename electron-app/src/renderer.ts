@@ -8,6 +8,13 @@
 
 import type { Config } from './config';
 
+// eslint-disable-next-line @stylistic/type-annotation-spacing -- Function type aliases here conflict with @stylistic/arrow-spacing under the current imperium preset combination.
+type DiscordBotCreator = () => void;
+
+type DiscordBridge = {
+  createDiscordBot: DiscordBotCreator;
+};
+
 type DOMElements = {
   currentImagesSpan: HTMLSpanElement;
   currentModeSpan: HTMLSpanElement;
@@ -18,19 +25,33 @@ type DOMElements = {
   opacitySliderInput: HTMLInputElement;
 };
 
+type HideBridge = {
+  hide: HideHandler;
+};
+
+// eslint-disable-next-line @stylistic/type-annotation-spacing -- Function type aliases here conflict with @stylistic/arrow-spacing under the current imperium preset combination.
+type HideHandler = () => void;
+
+type MessagesBridge = {
+  sendMessage: MessageSender;
+};
+
+// eslint-disable-next-line @stylistic/type-annotation-spacing -- Function type aliases here conflict with @stylistic/arrow-spacing under the current imperium preset combination.
+type MessageSender = (text: string) => void;
+
+type TrackedInput = HTMLInputElement | HTMLTextAreaElement;
+
 type WindowExtensions = {
-  assets: { [key: string]: string[] };
+  assets: Record<string, string[]>;
   config: { config: Config };
-  // eslint-disable-next-line @stylistic/type-annotation-spacing
-  discord: { createDiscordBot: () => void };
-  // eslint-disable-next-line @stylistic/type-annotation-spacing
-  hide: { hide: () => void };
-  // eslint-disable-next-line @stylistic/type-annotation-spacing
-  messages: { sendMessage: (text: string) => void };
+  discord: DiscordBridge;
+  hide: HideBridge;
+  messages: MessagesBridge;
   modes: { modes: string[] };
 };
 
-const w = window as unknown as WindowExtensions;
+const w = globalThis as unknown as WindowExtensions;
+const whitespaceOnlyPattern = /^\s*$/u;
 
 const moveLeftShortcuts = new Set(['a', 'ArrowLeft']);
 const moveRightShortcuts = new Set(['ArrowRight', 'd']);
@@ -115,7 +136,7 @@ const sendChatMessage = (event: Event, elements: DOMElements): void => {
   const message = elements.messageTextarea.value;
   elements.messageTextarea.value = '';
 
-  if ((/^\s*$/u).test(message)) {
+  if (whitespaceOnlyPattern.test(message)) {
     return;
   }
 
@@ -195,84 +216,106 @@ const moveModeTo = (mode: number, elements: DOMElements): void => {
   updateMode(elements);
 };
 
-const handleKeydown = (
+const isTrackedInput = (activeElement: Element | null, inputs: Set<TrackedInput>): boolean => {
+  if (
+    activeElement instanceof HTMLInputElement ||
+    activeElement instanceof HTMLTextAreaElement
+  ) {
+    return inputs.has(activeElement);
+  }
+
+  return false;
+};
+
+const handleImageViewerKeydown = (
   event: KeyboardEvent,
-  elements: DOMElements,
-  inputs: Set<HTMLInputElement | HTMLTextAreaElement>
+  eventKey: number,
+  elements: DOMElements
 ): void => {
-  const eventKey = Number.parseInt(event.key);
+  if (currentTab !== 0) {
+    return;
+  }
 
-  // Image Viewer tab
-
-  if (moveLeftShortcuts.has(event.key) && currentTab === 0) {
+  if (moveLeftShortcuts.has(event.key)) {
     moveImageLeft(elements);
   }
 
-  if (moveRightShortcuts.has(event.key) && currentTab === 0) {
+  if (moveRightShortcuts.has(event.key)) {
     moveImageRight(elements);
   }
 
   if (
     !Number.isNaN(eventKey) &&
-    !event.ctrlKey &&
-    document.activeElement !== elements.imageNumberInput &&
-    currentTab === 0
+    document.activeElement !== elements.imageNumberInput
   ) {
-    moveImageTo(eventKey, elements);
+    if (event.ctrlKey) {
+      moveModeTo(eventKey - 1, elements);
+    } else {
+      moveImageTo(eventKey, elements);
+    }
+  }
+};
+
+const handleChatKeydown = (event: KeyboardEvent, elements: DOMElements): void => {
+  if (currentTab !== 1) {
+    return;
   }
 
-  if (
-    !Number.isNaN(eventKey) &&
-    event.ctrlKey &&
-    document.activeElement !== elements.imageNumberInput &&
-    currentTab === 0
-  ) {
-    moveModeTo(eventKey - 1, elements);
-  }
-
-  // Chat tab
-
-  if (
-    sendMessageShortcuts.has(event.key) &&
-    currentTab === 1 &&
-    !event.shiftKey
-  ) {
+  if (sendMessageShortcuts.has(event.key) && !event.shiftKey) {
     sendChatMessage(event, elements);
   }
 
   if (
     toggleImagesShortcuts.has(event.key) &&
-    currentTab === 1 &&
     document.activeElement !== elements.messageTextarea
   ) {
     toggleChatImageSize(elements);
   }
+};
 
-  // All tabs
+const handleGlobalKeydown = (
+  event: KeyboardEvent,
+  elements: DOMElements,
+  inputs: Set<HTMLInputElement | HTMLTextAreaElement>
+): void => {
+  if (isTrackedInput(document.activeElement, inputs)) {
+    return;
+  }
 
-  if (
-    increaseOpacityShortcuts.has(event.key) &&
-    !inputs.has(document.activeElement as HTMLInputElement | HTMLTextAreaElement)
-  ) {
+  if (increaseOpacityShortcuts.has(event.key)) {
     changeOpacity(opacityStep, elements);
   }
 
-  if (
-    decreaseOpacityShortcuts.has(event.key) &&
-    !inputs.has(document.activeElement as HTMLInputElement | HTMLTextAreaElement)
-  ) {
+  if (decreaseOpacityShortcuts.has(event.key)) {
     changeOpacity(-opacityStep, elements);
   }
 
-  if (
-    switchTabShortcuts.has(event.key) &&
-    !inputs.has(document.activeElement as HTMLInputElement | HTMLTextAreaElement)
-  ) {
+  if (switchTabShortcuts.has(event.key)) {
     switchTab();
   }
 };
 
-window.addEventListener('DOMContentLoaded', () => {
+const handleKeydown = (
+  event: KeyboardEvent,
+  elements: DOMElements,
+  inputs: Set<HTMLInputElement | HTMLTextAreaElement>
+): void => {
+  const eventKey = Number.parseInt(event.key, 10);
+
+  handleImageViewerKeydown(
+    event,
+    eventKey,
+    elements
+  );
+  handleChatKeydown(event, elements);
+  handleGlobalKeydown(
+    event,
+    elements,
+    inputs
+  );
+};
+
+globalThis.addEventListener('DOMContentLoaded', () => {
   const image = document.querySelector<HTMLImageElement>('img#image');
   const currentModeSpan = document.querySelector<HTMLSpanElement>('span#current-mode');
   const currentPageSpan = document.querySelector<HTMLSpanElement>('span#current-page');
@@ -376,6 +419,6 @@ window.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    moveImageTo(Number.parseInt(value), elements);
+    moveImageTo(Number.parseInt(value, 10), elements);
   });
 });
