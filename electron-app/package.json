@@ -1,25 +1,7 @@
 {
-  "name": "prepis",
-  "version": "1.0.0",
-  "description": "Cheating tool for exams",
-  "type": "module",
-  "main": "dist/main.js",
-  "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch",
-    "format": "eslint . --cache --fix",
-    "lint": "eslint . --cache",
-    "start": "npm run build && electron .",
-    "dev": "npm run build && electron ."
-  },
-  "author": "Delemangi",
-  "homepage": "https://github.com/Delemangi/prepis",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Delemangi/prepis.git"
-  },
-  "bugs": {
-    "url": "https://github.com/Delemangi/prepis/issues"
+  "dependencies": {
+    "discord-api-types": "^0.38.49",
+    "discord.js": "^14.26.4"
   },
   "devDependencies": {
     "@types/node": "^26.0.0",
@@ -28,8 +10,17 @@
     "eslint-config-imperium": "^4.1.4",
     "typescript": "^6.0.3"
   },
-  "dependencies": {
-    "discord-api-types": "^0.38.49",
-    "discord.js": "^14.26.4"
-  }
+  "main": "dist/main.js",
+  "name": "prepis",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "dev": "npm run build && electron .",
+    "format": "eslint . --cache --fix",
+    "lint": "eslint . --cache",
+    "start": "npm run build && electron .",
+    "watch": "tsc --watch"
+  },
+  "type": "module",
+  "version": "0.0.0"
 }
