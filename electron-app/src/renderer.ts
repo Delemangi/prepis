@@ -64,49 +64,51 @@ const toggleImagesShortcuts = new Set(['b']);
 const opacityStep = 0.05;
 const defaultMode = w.modes.modes[0];
 
-let assets = w.assets[defaultMode];
-let currentImage = 0;
-let currentMode = 0;
-let currentTab = 0;
-let largeImages = false;
+const state = {
+  assets: w.assets[defaultMode],
+  currentImage: 0,
+  currentMode: 0,
+  currentTab: 0,
+  largeImages: false
+};
 
 const updateImage = (elements: DOMElements): void => {
-  elements.image.src = assets[currentImage];
-  elements.currentPageSpan.textContent = String(currentImage + 1);
+  elements.image.src = state.assets[state.currentImage];
+  elements.currentPageSpan.textContent = String(state.currentImage + 1);
 };
 
 const updateMode = (elements: DOMElements): void => {
-  assets = w.assets[w.modes.modes[currentMode]];
-  elements.currentModeSpan.textContent = w.modes.modes[currentMode];
+  state.assets = w.assets[w.modes.modes[state.currentMode]];
+  elements.currentModeSpan.textContent = w.modes.modes[state.currentMode];
   updateImage(elements);
 };
 
 const moveImageLeft = (elements: DOMElements): void => {
-  currentImage -= 1;
+  state.currentImage -= 1;
 
-  if (currentImage < 0) {
-    currentImage = 0;
+  if (state.currentImage < 0) {
+    state.currentImage = 0;
   }
 
   updateImage(elements);
 };
 
 const moveImageRight = (elements: DOMElements): void => {
-  currentImage += 1;
+  state.currentImage += 1;
 
-  if (currentImage > assets.length - 1) {
-    currentImage = assets.length - 1;
+  if (state.currentImage > state.assets.length - 1) {
+    state.currentImage = state.assets.length - 1;
   }
 
   updateImage(elements);
 };
 
 const moveImageTo = (index: number, elements: DOMElements): void => {
-  if (index < 0 || index > assets.length - 1) {
+  if (index < 0 || index > state.assets.length - 1) {
     return;
   }
 
-  currentImage = index - 1;
+  state.currentImage = index - 1;
 
   updateImage(elements);
 };
@@ -117,7 +119,7 @@ const setOpacity = (value: number, elements: DOMElements): void => {
   document.body.style.opacity = String(opacity);
   elements.opacitySliderInput.value = String(opacity * 100);
 
-  elements.currentPageSpan.textContent = String(currentImage + 1);
+  elements.currentPageSpan.textContent = String(state.currentImage + 1);
 };
 
 const changeOpacity = (step: number, elements: DOMElements): void => {
@@ -144,7 +146,7 @@ const sendChatMessage = (event: Event, elements: DOMElements): void => {
 };
 
 const setChatTab = (): void => {
-  currentTab = 1;
+  state.currentTab = 1;
   const imageViewer = document.querySelector<HTMLDivElement>('div#image-viewer');
   const chat = document.querySelector<HTMLDivElement>('div#chat');
 
@@ -155,7 +157,7 @@ const setChatTab = (): void => {
 };
 
 const setImageViewerTab = (): void => {
-  currentTab = 0;
+  state.currentTab = 0;
   const imageViewer = document.querySelector<HTMLDivElement>('div#image-viewer');
   const chat = document.querySelector<HTMLDivElement>('div#chat');
 
@@ -166,7 +168,7 @@ const setImageViewerTab = (): void => {
 };
 
 const switchTab = (): void => {
-  if (currentTab === 0) {
+  if (state.currentTab === 0) {
     setChatTab();
   } else {
     setImageViewerTab();
@@ -181,12 +183,12 @@ const toggleChatImageSize = (elements: DOMElements): void => {
     return;
   }
 
-  if (largeImages) {
-    largeImages = false;
+  if (state.largeImages) {
+    state.largeImages = false;
     root.style.setProperty('--message-image-max-width', '5%');
     elements.currentImagesSpan.textContent = 'Small';
   } else {
-    largeImages = true;
+    state.largeImages = true;
     root.style.setProperty('--message-image-max-width', '100%');
     elements.currentImagesSpan.textContent = 'Normal';
   }
@@ -195,11 +197,11 @@ const toggleChatImageSize = (elements: DOMElements): void => {
 };
 
 const nextMode = (elements: DOMElements): void => {
-  currentMode += 1;
-  currentImage = 0;
+  state.currentMode += 1;
+  state.currentImage = 0;
 
-  if (currentMode > w.modes.modes.length - 1) {
-    currentMode = 0;
+  if (state.currentMode > w.modes.modes.length - 1) {
+    state.currentMode = 0;
   }
 
   updateMode(elements);
@@ -210,8 +212,8 @@ const moveModeTo = (mode: number, elements: DOMElements): void => {
     return;
   }
 
-  currentMode = mode;
-  currentImage = 0;
+  state.currentMode = mode;
+  state.currentImage = 0;
 
   updateMode(elements);
 };
@@ -232,7 +234,7 @@ const handleImageViewerKeydown = (
   eventKey: number,
   elements: DOMElements
 ): void => {
-  if (currentTab !== 0) {
+  if (state.currentTab !== 0) {
     return;
   }
 
@@ -257,7 +259,7 @@ const handleImageViewerKeydown = (
 };
 
 const handleChatKeydown = (event: KeyboardEvent, elements: DOMElements): void => {
-  if (currentTab !== 1) {
+  if (state.currentTab !== 1) {
     return;
   }
 
@@ -315,7 +317,7 @@ const handleKeydown = (
   );
 };
 
-globalThis.addEventListener('DOMContentLoaded', () => {
+addEventListener('DOMContentLoaded', () => {
   const image = document.querySelector<HTMLImageElement>('img#image');
   const currentModeSpan = document.querySelector<HTMLSpanElement>('span#current-mode');
   const currentPageSpan = document.querySelector<HTMLSpanElement>('span#current-page');
@@ -368,9 +370,9 @@ globalThis.addEventListener('DOMContentLoaded', () => {
 
   const inputs = new Set([imageNumberInput, messageTextarea]);
 
-  image.src = assets[currentImage];
+  image.src = state.assets[state.currentImage];
   currentModeSpan.textContent = defaultMode;
-  currentPageSpan.textContent = String(currentImage + 1);
+  currentPageSpan.textContent = String(state.currentImage + 1);
   currentImagesSpan.textContent = 'Small';
 
   // Event listeners
@@ -415,7 +417,11 @@ globalThis.addEventListener('DOMContentLoaded', () => {
   imageNumberInput.addEventListener('input', (): void => {
     const value = imageNumberInput.value;
 
-    if (value === '' || value === '0' || value === '-0') {
+    if ([
+      '',
+      '0',
+      '-0'
+    ].includes(value)) {
       return;
     }
 

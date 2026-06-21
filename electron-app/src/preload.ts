@@ -17,7 +17,9 @@ for (const mode of modes) {
   assets[mode] = fs.readdirSync(dir).map((file) => `file://${path.join(dir, file).replaceAll('\\', '/')}`);
 }
 
-let client: discord.Client | undefined;
+const state: { client: discord.Client | undefined } = {
+  client: undefined
+};
 
 const getImages = (url: string): null | string[] => url.match(/https?:\/\/\S+\.(?:bmp|gif|jpeg|jpg|png)/gu);
 
@@ -48,7 +50,7 @@ const receiveMessage = (message: discord.Message): void => {
   const images = getImages(message.content);
   let string = message.content.trim();
 
-  element.textContent = `[${message.createdAt.toTimeString().split(' ')[0]}] ${message.author.tag}: ${string}`;
+  element.textContent = `[${message.createdAt.toTimeString().split(' ', 1)[0]}] ${message.author.tag}: ${string}`;
 
   if (images) {
     for (const image of images) {
@@ -73,11 +75,13 @@ const receiveMessage = (message: discord.Message): void => {
 };
 
 const sendMessage = (text: string): void => {
-  const message = text.trim();
+  const { client } = state;
 
   if (!client) {
     return;
   }
+
+  const message = text.trim();
 
   for (const channel of config.channels) {
     const channelObj = client.channels.cache.get(channel);
@@ -94,8 +98,9 @@ const sendMessage = (text: string): void => {
 
   const element = document.createElement('p');
   element.classList.add('message');
+  // eslint-disable-next-line unicorn/prefer-temporal -- Temporal is unavailable in this project's ES2021 lib target.
   element.textContent = `[${new Date().toTimeString()
-    .split(' ')[0]}] Me: ${message}`;
+    .split(' ', 1)[0]}] Me: ${message}`;
 
   messages.append(element);
   messages.scrollTop = messages.scrollHeight;
@@ -106,17 +111,19 @@ const hide = (): void => {
 };
 
 const createDiscordBot = async (): Promise<void> => {
-  if (client) {
-    void client.destroy();
+  if (state.client) {
+    void state.client.destroy();
   }
 
-  client = new discord.Client({
+  const client = new discord.Client({
     intents: [
       discord.GatewayIntentBits.GuildMessages,
       discord.GatewayIntentBits.Guilds,
       discord.GatewayIntentBits.MessageContent
     ]
   });
+
+  state.client = client;
 
   client.on('messageCreate', (message: discord.Message) => {
     if (message.author.bot && !message.webhookId) {
@@ -153,4 +160,5 @@ electron.contextBridge.exposeInMainWorld('discord', { createDiscordBot });
 electron.contextBridge.exposeInMainWorld('config', { config });
 electron.contextBridge.exposeInMainWorld('hide', { hide });
 
+// eslint-disable-next-line unicorn/prefer-top-level-await -- The preload must not block page load while the Discord bot connects in the background.
 void createDiscordBot();

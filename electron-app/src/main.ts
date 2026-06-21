@@ -55,21 +55,20 @@ const options: WindowOptions = {
   y: config.y
 };
 
-let main: electron.BrowserWindow;
-let pdf: electron.BrowserWindow;
-
-const createMainWindow = (): void => {
-  main = new electron.BrowserWindow(options);
-  void main.loadFile(path.join(
+const createMainWindow = (): electron.BrowserWindow => {
+  const mainWindow = new electron.BrowserWindow(options);
+  void mainWindow.loadFile(path.join(
     import.meta.dirname,
     '..',
     'public',
     'index.html'
   ));
+
+  return mainWindow;
 };
 
-const createPDFWindow = (): void => {
-  pdf = new electron.BrowserWindow({
+const createPDFWindow = (): electron.BrowserWindow => {
+  const pdfWindow = new electron.BrowserWindow({
     ...options,
     opacity: 0.25,
     webPreferences: {
@@ -77,7 +76,7 @@ const createPDFWindow = (): void => {
       plugins: true
     }
   });
-  void pdf.loadFile(path.join(
+  void pdfWindow.loadFile(path.join(
     import.meta.dirname,
     '..',
     '..',
@@ -85,13 +84,15 @@ const createPDFWindow = (): void => {
     'test.pdf'
   ));
 
-  pdf.minimize();
+  pdfWindow.minimize();
+
+  return pdfWindow;
 };
 
 await electron.app.whenReady();
 
-createMainWindow();
-createPDFWindow();
+const main = createMainWindow();
+const pdf = createPDFWindow();
 
 electron.globalShortcut.register('Esc', () => {
   if (main.isMinimized()) {
@@ -110,17 +111,21 @@ electron.globalShortcut.register('Shift+Esc', () => {
 });
 
 electron.globalShortcut.register('Alt+S', () => {
-  if (!pdf.isMinimized()) {
-    const opacity = pdf.getOpacity();
-    pdf.setOpacity(Math.min(1, Math.max(0.05, opacity - 0.05)));
+  if (pdf.isMinimized()) {
+    return;
   }
+
+  const opacity = pdf.getOpacity();
+  pdf.setOpacity(Math.min(1, Math.max(0.05, opacity - 0.05)));
 });
 
 electron.globalShortcut.register('Alt+W', () => {
-  if (!pdf.isMinimized()) {
-    const opacity = pdf.getOpacity();
-    pdf.setOpacity(Math.min(1, Math.max(0.05, opacity + 0.05)));
+  if (pdf.isMinimized()) {
+    return;
   }
+
+  const opacity = pdf.getOpacity();
+  pdf.setOpacity(Math.min(1, Math.max(0.05, opacity + 0.05)));
 });
 
 electron.ipcMain.on('hide', () => {
