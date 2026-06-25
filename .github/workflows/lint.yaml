@@ -12,13 +12,13 @@ permissions:
 
 jobs:
   tsc:
-    uses: finki-hub/.github/.github/workflows/tsc.yaml@main
+    uses: Delemangi/.github/.github/workflows/tsc.yaml@main
     with:
       working-directory: electron-app
     secrets: inherit
 
   eslint:
-    uses: finki-hub/.github/.github/workflows/eslint.yaml@main
+    uses: Delemangi/.github/.github/workflows/eslint.yaml@main
     with:
       working-directory: electron-app
     secrets: inherit
