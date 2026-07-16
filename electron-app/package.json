@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "discord-api-types": "^0.38.50",
-    "discord.js": "^14.26.5"
+    "discord.js": "^14.27.0"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
