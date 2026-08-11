@@ -4,7 +4,7 @@
     "discord.js": "^14.27.0"
   },
   "devDependencies": {
-    "@types/node": "^26.1.2",
+    "@types/node": "^26.2.0",
     "electron": "^43.3.0",
     "eslint": "^10.8.0",
     "eslint-config-imperium": "^4.1.4",
