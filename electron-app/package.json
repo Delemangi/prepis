@@ -5,7 +5,7 @@
   },
   "devDependencies": {
     "@types/node": "^26.6.1",
-    "electron": "^44.3.0",
+    "electron": "^44.4.2",
     "eslint": "^10.10.0",
     "eslint-config-imperium": "^4.1.4",
     "typescript": "^6.0.3"
