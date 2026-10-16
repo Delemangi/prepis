@@ -23,6 +23,13 @@ const state: { client: discord.Client | undefined } = {
 
 const getImages = (url: string): null | string[] => url.match(/https?:\/\/\S+\.(?:bmp|gif|jpeg|jpg|png)/gu);
 
+const getTime = (date: Date): string => {
+  const time = date.toTimeString();
+  const separatorIndex = time.indexOf(' ');
+
+  return separatorIndex === -1 ? time : time.slice(0, separatorIndex);
+};
+
 const showStatusMessage = (message: string): void => {
   const messages = document.querySelector(messagesSelector);
 
@@ -50,17 +57,17 @@ const receiveMessage = (message: discord.Message): void => {
   const images = getImages(message.content);
   let string = message.content.trim();
 
-  element.textContent = `[${message.createdAt.toTimeString().split(' ', 1)[0]}] ${message.author.tag}: ${string}`;
+  element.textContent = `[${getTime(message.createdAt)}] ${message.author.tag}: ${string}`;
 
-  if (images) {
-    for (const image of images) {
-      const img = document.createElement('img');
-      img.classList.add('message-image');
-      img.src = image;
-      element.append(img);
+  const imageList = images ?? [];
 
-      string = string.replaceAll(image, '');
-    }
+  for (const image of imageList) {
+    const img = document.createElement('img');
+    img.classList.add('message-image');
+    img.src = image;
+    element.append(img);
+
+    string = string.replaceAll(image, '');
   }
 
   for (const attachment of message.attachments) {
@@ -99,8 +106,7 @@ const sendMessage = (text: string): void => {
   const element = document.createElement('p');
   element.classList.add('message');
   // eslint-disable-next-line unicorn/prefer-temporal -- Temporal is unavailable in this project's ES2021 lib target.
-  element.textContent = `[${new Date().toTimeString()
-    .split(' ', 1)[0]}] Me: ${message}`;
+  element.textContent = `[${getTime(new Date())}] Me: ${message}`;
 
   messages.append(element);
   messages.scrollTop = messages.scrollHeight;
@@ -160,5 +166,4 @@ electron.contextBridge.exposeInMainWorld('discord', { createDiscordBot });
 electron.contextBridge.exposeInMainWorld('config', { config });
 electron.contextBridge.exposeInMainWorld('hide', { hide });
 
-// eslint-disable-next-line unicorn/prefer-top-level-await -- The preload must not block page load while the Discord bot connects in the background.
 void createDiscordBot();
