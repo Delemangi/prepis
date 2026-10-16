@@ -150,10 +150,12 @@ const setChatTab = (): void => {
   const imageViewer = document.querySelector<HTMLDivElement>('div#image-viewer');
   const chat = document.querySelector<HTMLDivElement>('div#chat');
 
-  if (imageViewer && chat) {
-    imageViewer.style.display = 'none';
-    chat.style.display = 'flex';
+  if (!imageViewer || !chat) {
+    return;
   }
+
+  imageViewer.style.display = 'none';
+  chat.style.display = 'flex';
 };
 
 const setImageViewerTab = (): void => {
@@ -161,10 +163,12 @@ const setImageViewerTab = (): void => {
   const imageViewer = document.querySelector<HTMLDivElement>('div#image-viewer');
   const chat = document.querySelector<HTMLDivElement>('div#chat');
 
-  if (imageViewer && chat) {
-    chat.style.display = 'none';
-    imageViewer.style.display = 'flex';
+  if (!imageViewer || !chat) {
+    return;
   }
+
+  chat.style.display = 'none';
+  imageViewer.style.display = 'flex';
 };
 
 const switchTab = (): void => {
@@ -219,14 +223,10 @@ const moveModeTo = (mode: number, elements: DOMElements): void => {
 };
 
 const isTrackedInput = (activeElement: Element | null, inputs: Set<TrackedInput>): boolean => {
-  if (
-    activeElement instanceof HTMLInputElement ||
-    activeElement instanceof HTMLTextAreaElement
-  ) {
-    return inputs.has(activeElement);
-  }
+  const isInput =
+    activeElement instanceof HTMLInputElement || activeElement instanceof HTMLTextAreaElement;
 
-  return false;
+  return isInput && inputs.has(activeElement);
 };
 
 const handleImageViewerKeydown = (
