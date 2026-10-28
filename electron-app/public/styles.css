@@ -22,7 +22,7 @@ body {
 
 ::selection {
     background: darkgray;
-    color: lightgray;
+    color: #000;
 }
 
 div#chat {

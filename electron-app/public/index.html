@@ -3,7 +3,6 @@
 
   <head>
     <meta charset="UTF-8">
-    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"> -->
     <link href="./styles.css" rel="stylesheet">
     <title>Prepis</title>
   </head>
@@ -18,7 +17,7 @@
         <button id="first-image">First</button>
         <button id="previous-image">&lt;</button>
         <button id="next-image">&gt;</button>
-        <input id="image-number" type="number" placeholder="#">
+        <input id="image-number" type="number" placeholder="#" aria-label="Image number">
       </div>
       <div class="controls">
         <span>Mode: <span id="current-mode"></span> | Page: <span id="current-page"></span></span>
@@ -28,7 +27,7 @@
       <div id="messages"></div>
       <div class="controls">
         <button id="toggle-images">Images</button>
-        <textarea id="type-message" type="text" spellcheck="false"></textarea>
+        <textarea id="type-message" type="text" spellcheck="false" aria-label="Message"></textarea>
         <button id="send-message">Send</button>
       </div>
       <div class="controls">
@@ -42,7 +41,7 @@
       </div>
       <div id="options">
         <button id="toggle-visibility">Visibility</button>
-        <input id="opacity-slider" type="range" min="1" max="100" value="100">
+        <input id="opacity-slider" type="range" min="1" max="100" value="100" aria-label="Window opacity">
       </div>
     </div>
     <script src="../dist/renderer.js"></script>
